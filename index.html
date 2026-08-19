@@ -7,6 +7,7 @@
   <title>TodoHogar | Electrodomésticos</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Cliente de Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     tailwind.config = {
@@ -174,6 +175,12 @@
       <h3 class="text-xl font-black">No encontramos productos</h3>
       <p class="text-slate-500 mt-2">Prueba con otra búsqueda o categoría.</p>
     </div>
+
+    <div id="errorState" class="hidden text-center py-20">
+      <div class="text-5xl mb-4">⚠️</div>
+      <h3 class="text-xl font-black">No pudimos cargar los productos</h3>
+      <p class="text-slate-500 mt-2">Revisa la conexión a Supabase (URL, anon key y políticas RLS).</p>
+    </div>
   </main>
 
   <!-- ========================= MISIÓN / VISIÓN ========================= -->
@@ -324,11 +331,13 @@
   </footer>
 
   <script>
-    // ======= CONEXIÓN A SUPABASE =======
-    // Reemplaza estos dos valores con los de tu proyecto:
-    // Project Settings → API → Project URL / anon public key
-    const SUPABASE_URL = "https://qejmqlbmelzkwfwngmzc.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFlam1xbGJtZWx6a3dmd25nbXpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcxNTIyODksImV4cCI6MjEwMjcyODI4OX0.oRI61xwy1HepsmGK1mahdiDZs8Dx9pkHvgwGjB5aULk";
+    // ======================================================
+    // CONEXIÓN A SUPABASE
+    // Reemplaza estos dos valores con los tuyos:
+    // Project Settings -> API -> Project URL / anon public key
+    // ======================================================
+    const SUPABASE_URL = "TU_PROJECT_URL_AQUI";
+    const SUPABASE_ANON_KEY = "TU_ANON_KEY_AQUI";
 
     const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -353,6 +362,7 @@
       });
     }
 
+    // Trae los productos desde la tabla "products" en Supabase
     async function loadProductsFromSupabase() {
       const { data, error } = await supabaseClient
         .from("products")
@@ -360,17 +370,17 @@
         .order("id", { ascending: true });
 
       if (error) {
-        console.error("Error cargando productos desde Supabase:", error.message);
-        products = [];
+        console.error("Error cargando productos desde Supabase:", error);
+        document.getElementById("loadingState").classList.add("hidden");
+        document.getElementById("errorState").classList.remove("hidden");
         return;
       }
 
       products = data || [];
+      await validateProductImages();
     }
 
     async function validateProductImages() {
-      await loadProductsFromSupabase();
-
       const checks = await Promise.all(
         products.map(async product => ({
           product,
@@ -599,6 +609,8 @@
       }`;
     }
 
+    // Al confirmar el pedido, se guarda en Supabase: una fila en "orders"
+    // y una fila por cada producto en "order_items"
     document.getElementById("orderForm").addEventListener("submit", async event => {
       event.preventDefault();
 
@@ -612,64 +624,59 @@
         return;
       }
 
-      const submitButton = event.target.querySelector('button[type="submit"]');
-      if (submitButton) submitButton.disabled = true;
+      const { subtotal, iva, total, details } = getTotals();
+      const nameProduct = details.map(item => item.name).join(", ");
 
-      const { details, subtotal, iva, total } = getTotals();
+      const { data: orderData, error: orderError } = await supabaseClient
+        .from("orders")
+        .insert({
+          customer_name: name,
+          customer_phone: phone,
+          customer_email: email,
+          customer_address: address,
+          subtotal: subtotal,
+          iva: iva,
+          total: total,
+          name_product: nameProduct
+        })
+        .select()
+        .single();
 
-      try {
-        // 1. Guarda el pedido en la tabla "orders"
-        const { data: orderRow, error: orderError } = await supabaseClient
-          .from("orders")
-          .insert({
-            customer_name: name,
-            customer_phone: phone,
-            customer_email: email,
-            customer_address: address,
-            subtotal: subtotal,
-            iva: iva,
-            total: total
-          })
-          .select()
-          .single();
-
-        if (orderError) throw orderError;
-
-        // 2. Guarda cada producto del carrito en "order_items"
-        const items = details.map(item => ({
-          order_id: orderRow.id,
-          producto_id: item.id,
-          quantity: item.quantity,
-          unit_price: item.price
-        }));
-
-        const { error: itemsError } = await supabaseClient
-          .from("order_items")
-          .insert(items);
-
-        if (itemsError) throw itemsError;
-
-        showOrderMessage(
-          "¡Pedido confirmado! Gracias por elegir TodoHogar.",
-          true
-        );
-
-        cart = [];
-        renderCart();
-        document.getElementById("orderForm").reset();
-
-        setTimeout(() => {
-          closeOrder();
-        }, 1800);
-      } catch (err) {
-        console.error("Error al guardar el pedido:", err.message);
-        showOrderMessage(
-          "No se pudo enviar el pedido. Intenta de nuevo.",
-          false
-        );
-      } finally {
-        if (submitButton) submitButton.disabled = false;
+      if (orderError) {
+        console.error("Error guardando el pedido:", orderError);
+        showOrderMessage("Hubo un error al guardar tu pedido. Intenta de nuevo.", false);
+        return;
       }
+
+      const orderItems = details.map(item => ({
+        order_id: orderData.id,
+        product_id: item.id,
+        quantity: item.quantity,
+        unit_price: item.price
+      }));
+
+      const { error: itemsError } = await supabaseClient
+        .from("order_items")
+        .insert(orderItems);
+
+      if (itemsError) {
+        console.error("Error guardando los productos del pedido:", itemsError);
+        showOrderMessage("El pedido se creó pero hubo un error al guardar los productos.", false);
+        return;
+      }
+
+      showOrderMessage(
+        "¡Pedido confirmado! Gracias por elegir TodoHogar.",
+        true
+      );
+
+      cart = [];
+      renderCart();
+      document.getElementById("orderForm").reset();
+
+      setTimeout(() => {
+        closeOrder();
+      }, 1800);
     });
 
     document.getElementById("cartButton").addEventListener("click", openCart);
@@ -711,7 +718,7 @@
     bindSearch("searchInputMobile");
 
     renderCart();
-    validateProductImages();
+    loadProductsFromSupabase();
   </script>
 </body>
 </html>
