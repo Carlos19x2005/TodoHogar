@@ -3,51 +3,55 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="TodoHogar - tienda de electrodomésticos">
+  <meta name="description" content="TodoHogar - Electrodomésticos modernos para tu hogar">
   <title>TodoHogar | Electrodomésticos</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
             primary: {
-              50: "#eef7ff", 100: "#d9edff", 500: "#1687e8",
-              600: "#0875d1", 700: "#075eaa", 900: "#063b6b"
+              50: "#eff8ff",
+              100: "#dff0ff",
+              500: "#1687e8",
+              600: "#0875d1",
+              700: "#075eaa",
+              900: "#063b6b"
             }
           },
           boxShadow: {
-            soft: "0 12px 40px rgba(15, 23, 42, .08)"
+            soft: "0 16px 45px rgba(15,23,42,.08)"
           }
         }
       }
-    }
+    };
   </script>
 
   <style>
     html { scroll-behavior: smooth; }
     body { background: #f7f9fc; }
-    .glass { background: rgba(255,255,255,.88); backdrop-filter: blur(14px); }
+    .glass { background: rgba(255,255,255,.92); backdrop-filter: blur(16px); }
     .product-card { transition: transform .25s ease, box-shadow .25s ease; }
-    .product-card:hover { transform: translateY(-5px); box-shadow: 0 18px 45px rgba(15,23,42,.12); }
+    .product-card:hover { transform: translateY(-6px); box-shadow: 0 20px 50px rgba(15,23,42,.13); }
     .product-card img { transition: transform .35s ease; }
-    .product-card:hover img { transform: scale(1.045); }
+    .product-card:hover img { transform: scale(1.04); }
+    .hide-scrollbar::-webkit-scrollbar { display: none; }
+    .hide-scrollbar { scrollbar-width: none; }
     .line-clamp-2 {
-      display: -webkit-box; -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical; overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
     }
-    .hide-scrollbar::-webkit-scrollbar { display:none; }
-    .hide-scrollbar { scrollbar-width:none; }
   </style>
 </head>
 
 <body class="text-slate-800">
 
-  <!-- ========================= HEADER ========================= -->
-  <header class="sticky top-0 z-40 border-b border-slate-200/80 glass">
+  <!-- ========================= ENCABEZADO ========================= -->
+  <header class="sticky top-0 z-50 border-b border-slate-200/80 glass">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="h-20 flex items-center gap-4">
 
@@ -55,7 +59,7 @@
           <div class="w-11 h-11 rounded-2xl bg-primary-600 text-white grid place-items-center font-black shadow-lg">TH</div>
           <div>
             <div class="text-xl font-black tracking-tight text-slate-950">TodoHogar</div>
-            <div class="text-[11px] text-slate-500">Electrodomésticos para tu hogar</div>
+            <div class="text-[11px] text-slate-500">Soluciones para tu hogar</div>
           </div>
         </a>
 
@@ -64,12 +68,12 @@
             <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">⌕</span>
             <input id="searchInput" type="search"
               placeholder="Buscar un electrodoméstico..."
-              class="w-full rounded-2xl border border-slate-200 bg-slate-50/90 pl-11 pr-4 py-3.5 outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+              class="w-full rounded-2xl border border-slate-200 bg-slate-50 pl-11 pr-4 py-3.5 outline-none focus:ring-2 focus:ring-primary-500">
           </div>
         </div>
 
         <button id="cartButton"
-          class="relative ml-auto rounded-2xl bg-slate-950 hover:bg-primary-700 text-white px-4 py-3 font-bold transition shadow-sm">
+          class="relative ml-auto rounded-2xl bg-slate-950 hover:bg-primary-700 text-white px-4 py-3 font-bold transition">
           🛒 <span class="hidden sm:inline">Carrito</span>
           <span id="cartCount"
             class="absolute -right-2 -top-2 min-w-6 h-6 px-1 rounded-full bg-primary-600 text-white text-xs grid place-items-center border-2 border-white">0</span>
@@ -77,7 +81,8 @@
       </div>
 
       <div class="md:hidden pb-4">
-        <input id="searchInputMobile" type="search" placeholder="Buscar un electrodoméstico..."
+        <input id="searchInputMobile" type="search"
+          placeholder="Buscar un electrodoméstico..."
           class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:ring-2 focus:ring-primary-500">
       </div>
 
@@ -97,53 +102,59 @@
   <!-- ========================= HERO ========================= -->
   <section class="relative overflow-hidden bg-slate-950 text-white">
     <div class="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(22,135,232,.35),transparent_35%),radial-gradient(circle_at_10%_90%,rgba(7,94,170,.25),transparent_35%)]"></div>
-    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28">
       <div class="max-w-3xl">
         <span class="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/10 px-4 py-2 text-sm font-bold">
-          ✦ Selección TodoHogar
+          ✦ Bienvenido a TodoHogar
         </span>
+
         <h1 class="mt-6 text-4xl md:text-6xl font-black tracking-tight leading-tight">
           Tecnología que hace tu hogar más fácil.
         </h1>
+
         <p class="mt-5 text-lg md:text-xl text-slate-300 max-w-2xl">
-          Descubre electrodomésticos modernos y funcionales para cocinar, lavar, conservar y disfrutar cada espacio de tu hogar.
+          Encuentra electrodomésticos modernos, funcionales y pensados para acompañarte en cada espacio de tu hogar.
         </p>
-        <a href="#catalogo"
-          class="inline-flex mt-8 items-center gap-2 bg-primary-500 hover:bg-primary-600 text-white px-6 py-3.5 rounded-2xl font-black transition shadow-lg">
-          Explorar catálogo <span>→</span>
+
+        <a href="#productos"
+          class="inline-flex mt-8 items-center gap-2 bg-primary-500 hover:bg-primary-600 text-white px-6 py-3.5 rounded-2xl font-black transition">
+          Ver productos <span>→</span>
         </a>
       </div>
     </div>
   </section>
 
-  <!-- ========================= BENEFICIOS ========================= -->
-  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 relative z-10">
+  <!-- ========================= PROPUESTA DE VALOR ========================= -->
+  <section id="propuesta" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 relative z-10">
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <div class="bg-white rounded-2xl p-5 shadow-soft border border-slate-100">
-        <div class="text-2xl">✓</div>
-        <div class="mt-2 font-black">Catálogo seleccionado</div>
-        <p class="text-sm text-slate-500 mt-1">Solo mostramos productos con una imagen válida disponible.</p>
-      </div>
-      <div class="bg-white rounded-2xl p-5 shadow-soft border border-slate-100">
-        <div class="text-2xl">🛒</div>
-        <div class="mt-2 font-black">Compra sencilla</div>
-        <p class="text-sm text-slate-500 mt-1">Agrega productos y revisa subtotal, IVA y total.</p>
-      </div>
-      <div class="bg-white rounded-2xl p-5 shadow-soft border border-slate-100">
-        <div class="text-2xl">🔒</div>
-        <div class="mt-2 font-black">Checkout académico</div>
-        <p class="text-sm text-slate-500 mt-1">Validación de formulario y registro preparado para Supabase.</p>
-      </div>
+      <article class="bg-white rounded-3xl p-6 shadow-soft border border-slate-100">
+        <div class="w-12 h-12 rounded-2xl bg-primary-50 text-primary-600 grid place-items-center text-2xl">✓</div>
+        <h2 class="mt-4 font-black text-lg">Calidad para tu hogar</h2>
+        <p class="text-sm text-slate-500 mt-2">Una selección de productos útiles, modernos y pensados para facilitar tus actividades diarias.</p>
+      </article>
+
+      <article class="bg-white rounded-3xl p-6 shadow-soft border border-slate-100">
+        <div class="w-12 h-12 rounded-2xl bg-primary-50 text-primary-600 grid place-items-center text-2xl">⚡</div>
+        <h2 class="mt-4 font-black text-lg">Tecnología y comodidad</h2>
+        <p class="text-sm text-slate-500 mt-2">Electrodomésticos que combinan funcionalidad, diseño y soluciones prácticas para cada espacio.</p>
+      </article>
+
+      <article class="bg-white rounded-3xl p-6 shadow-soft border border-slate-100">
+        <div class="w-12 h-12 rounded-2xl bg-primary-50 text-primary-600 grid place-items-center text-2xl">♥</div>
+        <h2 class="mt-4 font-black text-lg">Pensado para ti</h2>
+        <p class="text-sm text-slate-500 mt-2">Queremos que encontrar el producto ideal para tu hogar sea una experiencia sencilla y agradable.</p>
+      </article>
     </div>
   </section>
 
-  <!-- ========================= CATALOGO ========================= -->
-  <main id="catalogo" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+  <!-- ========================= PRODUCTOS ========================= -->
+  <main id="productos" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
     <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-3 mb-8">
       <div>
-        <p class="text-primary-600 font-black uppercase tracking-widest text-xs">TodoHogar</p>
+        <p class="text-primary-600 font-black uppercase tracking-widest text-xs">Catálogo</p>
         <h2 class="text-3xl md:text-4xl font-black text-slate-950 mt-1">Nuestros productos</h2>
-        <p class="text-slate-500 mt-2">Productos con imágenes verificadas durante la carga.</p>
+        <p class="text-slate-500 mt-2">Descubre opciones para cocinar, lavar, conservar y disfrutar tu hogar.</p>
       </div>
       <p id="resultCount" class="text-sm font-semibold text-slate-500"></p>
     </div>
@@ -164,619 +175,529 @@
     </div>
   </main>
 
+  <!-- ========================= MISIÓN / VISIÓN ========================= -->
+  <section id="nosotros" class="bg-white border-y border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div class="text-center max-w-2xl mx-auto">
+        <p class="text-primary-600 font-black uppercase tracking-widest text-xs">TodoHogar</p>
+        <h2 class="text-3xl md:text-4xl font-black text-slate-950 mt-2">Quiénes somos</h2>
+        <p class="text-slate-500 mt-3">Una propuesta enfocada en hacer más sencillo encontrar soluciones para el hogar.</p>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-6 mt-10">
+        <article class="rounded-3xl bg-slate-950 text-white p-8 md:p-10">
+          <span class="text-primary-400 font-black uppercase tracking-widest text-xs">Nuestra misión</span>
+          <h3 class="text-2xl font-black mt-3">Facilitar una mejor vida en el hogar</h3>
+          <p class="text-slate-300 mt-4 leading-7">
+            Ofrecer electrodomésticos prácticos y de calidad que ayuden a las familias a realizar sus actividades cotidianas con mayor comodidad, eficiencia y confianza.
+          </p>
+        </article>
+
+        <article class="rounded-3xl bg-primary-600 text-white p-8 md:p-10">
+          <span class="text-primary-100 font-black uppercase tracking-widest text-xs">Nuestra visión</span>
+          <h3 class="text-2xl font-black mt-3">Ser una opción confiable para cada hogar</h3>
+          <p class="text-primary-50 mt-4 leading-7">
+            Convertirnos en una tienda reconocida por ofrecer una experiencia sencilla, moderna y cercana, con productos que respondan a las necesidades de los hogares.
+          </p>
+        </article>
+      </div>
+
+      <article class="mt-6 rounded-3xl border border-slate-200 bg-slate-50 p-8 md:p-10">
+        <span class="text-primary-600 font-black uppercase tracking-widest text-xs">Propuesta de valor</span>
+        <h3 class="text-2xl font-black text-slate-950 mt-3">Todo lo que necesitas para hacer tu hogar más práctico.</h3>
+        <p class="text-slate-600 mt-4 max-w-4xl leading-7">
+          En TodoHogar reunimos electrodomésticos seleccionados por su funcionalidad, diseño y utilidad, buscando ofrecer una experiencia de compra clara y una alternativa práctica para las necesidades del hogar.
+        </p>
+      </article>
+    </div>
+  </section>
+
   <!-- ========================= CARRITO ========================= -->
-  <div id="cartOverlay" class="hidden fixed inset-0 z-50 bg-slate-950/60"></div>
+  <div id="cartOverlay" class="hidden fixed inset-0 z-[60] bg-slate-950/60"></div>
+
   <aside id="cartPanel"
-    class="fixed top-0 right-0 z-[60] h-full w-full sm:max-w-md bg-white shadow-2xl translate-x-full transition-transform duration-300 flex flex-col">
+    class="fixed top-0 right-0 z-[70] h-full w-full sm:max-w-md bg-white shadow-2xl translate-x-full transition-transform duration-300 flex flex-col">
     <div class="p-5 border-b flex items-center justify-between">
       <div>
         <h2 class="text-xl font-black">Tu carrito</h2>
-        <p class="text-sm text-slate-500">Resumen de tu pedido</p>
+        <p class="text-sm text-slate-500">Productos seleccionados</p>
       </div>
       <button id="closeCart" class="w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 text-xl">×</button>
     </div>
+
     <div id="cartItems" class="flex-1 overflow-y-auto p-5 space-y-4"></div>
+
     <div class="border-t p-5 bg-slate-50">
-      <div class="flex justify-between text-sm mb-2"><span>Subtotal</span><span id="cartSubtotal">$0.00</span></div>
-      <div class="flex justify-between text-sm mb-2"><span>IVA (15%)</span><span id="cartIva">$0.00</span></div>
-      <div class="flex justify-between text-lg font-black border-t pt-3 mt-3"><span>Total</span><span id="cartTotal">$0.00</span></div>
+      <div class="flex justify-between text-sm mb-2">
+        <span>Subtotal</span>
+        <span id="cartSubtotal">$0.00</span>
+      </div>
+      <div class="flex justify-between text-sm mb-2">
+        <span>IVA (15%)</span>
+        <span id="cartIva">$0.00</span>
+      </div>
+      <div class="flex justify-between text-lg font-black border-t pt-3 mt-3">
+        <span>Total</span>
+        <span id="cartTotal">$0.00</span>
+      </div>
       <button id="checkoutButton"
         class="w-full mt-5 rounded-2xl bg-primary-600 hover:bg-primary-700 text-white py-3.5 font-black disabled:opacity-40 disabled:cursor-not-allowed">
-        Proceder al pago
+        Finalizar pedido
       </button>
     </div>
   </aside>
 
-  <!-- ========================= PAGO ========================= -->
-  <div id="paymentModal" class="hidden fixed inset-0 z-[70] bg-slate-950/70 p-4 overflow-y-auto">
+  <!-- ========================= PEDIDO ========================= -->
+  <div id="orderModal" class="hidden fixed inset-0 z-[80] bg-slate-950/70 p-4 overflow-y-auto">
     <div class="min-h-full flex items-center justify-center py-8">
-      <div class="w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden">
+      <div class="w-full max-w-xl bg-white rounded-3xl shadow-2xl overflow-hidden">
         <div class="p-6 border-b flex items-start justify-between">
           <div>
-            <p class="text-primary-600 font-black text-xs uppercase tracking-widest">Checkout</p>
-            <h2 class="text-2xl font-black mt-1">Finalizar compra</h2>
-            <p class="text-sm text-slate-500 mt-1">Completa tus datos para registrar el pedido.</p>
+            <p class="text-primary-600 font-black text-xs uppercase tracking-widest">TodoHogar</p>
+            <h2 class="text-2xl font-black mt-1">Finalizar pedido</h2>
+            <p class="text-sm text-slate-500 mt-1">Completa tus datos de contacto.</p>
           </div>
-          <button id="closePayment" class="w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 text-xl">×</button>
+          <button id="closeOrder" class="w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 text-xl">×</button>
         </div>
 
-        <form id="paymentForm" class="p-6 space-y-6">
-          <div>
-            <h3 class="font-black text-lg mb-3">Datos del cliente</h3>
-            <div class="grid sm:grid-cols-2 gap-4">
-              <input id="customerName" required type="text" placeholder="Nombre completo"
-                class="rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:ring-2 focus:ring-primary-500">
-              <input id="customerEmail" required type="email" placeholder="Correo electrónico"
-                class="rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:ring-2 focus:ring-primary-500">
-            </div>
+        <form id="orderForm" class="p-6 space-y-5">
+          <div class="grid sm:grid-cols-2 gap-4">
+            <input id="customerName" required type="text" placeholder="Nombre completo"
+              class="rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:ring-2 focus:ring-primary-500">
+            <input id="customerPhone" required type="tel" placeholder="Teléfono"
+              class="rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:ring-2 focus:ring-primary-500">
           </div>
 
-          <div>
-            <h3 class="font-black text-lg mb-3">Tarjeta</h3>
-            <div class="space-y-4">
-              <input id="cardName" required type="text" placeholder="Nombre del titular"
-                class="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:ring-2 focus:ring-primary-500">
-              <input id="cardNumber" required inputmode="numeric" maxlength="19"
-                placeholder="Número de tarjeta (16 dígitos)"
-                class="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:ring-2 focus:ring-primary-500">
-              <div class="grid grid-cols-2 gap-4">
-                <input id="cardExpiry" required type="text" maxlength="5" placeholder="MM/AA"
-                  class="rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:ring-2 focus:ring-primary-500">
-                <input id="cardCvc" required inputmode="numeric" maxlength="4" placeholder="CVC"
-                  class="rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:ring-2 focus:ring-primary-500">
-              </div>
-            </div>
-          </div>
+          <input id="customerEmail" required type="email" placeholder="Correo electrónico"
+            class="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:ring-2 focus:ring-primary-500">
+
+          <textarea id="customerAddress" required rows="3" placeholder="Dirección de entrega"
+            class="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:ring-2 focus:ring-primary-500"></textarea>
 
           <div class="rounded-2xl bg-slate-50 p-4">
-            <div class="flex justify-between text-sm"><span>Subtotal</span><span id="paymentSubtotal">$0.00</span></div>
-            <div class="flex justify-between text-sm mt-2"><span>IVA</span><span id="paymentIva">$0.00</span></div>
-            <div class="flex justify-between font-black text-lg border-t mt-3 pt-3"><span>Total</span><span id="paymentTotal">$0.00</span></div>
+            <div class="flex justify-between text-sm"><span>Subtotal</span><span id="orderSubtotal">$0.00</span></div>
+            <div class="flex justify-between text-sm mt-2"><span>IVA</span><span id="orderIva">$0.00</span></div>
+            <div class="flex justify-between font-black text-lg border-t mt-3 pt-3"><span>Total</span><span id="orderTotal">$0.00</span></div>
           </div>
 
-          <p class="text-xs text-slate-500">
-            Demo académica: los datos de tarjeta solo se validan en el navegador y no se guardan en Supabase.
-            Para pagos reales utiliza una pasarela segura.
-          </p>
-
-          <div id="paymentMessage" class="hidden rounded-2xl px-4 py-3 text-sm"></div>
+          <div id="orderMessage" class="hidden rounded-2xl px-4 py-3 text-sm"></div>
 
           <button type="submit"
             class="w-full rounded-2xl bg-primary-600 hover:bg-primary-700 text-white py-3.5 font-black">
-            Confirmar compra
+            Confirmar pedido
           </button>
         </form>
       </div>
     </div>
   </div>
 
-  <!-- ========================= FOOTER ========================= -->
-  <footer class="bg-slate-950 text-slate-300 mt-10">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div class="grid md:grid-cols-3 gap-8">
-        <div>
-          <div class="text-white text-2xl font-black">TodoHogar</div>
-          <p class="text-sm mt-3 max-w-md text-slate-400">
-            Tienda web académica de electrodomésticos desarrollada con HTML, Tailwind CSS, JavaScript y Supabase.
-          </p>
-        </div>
-        <div>
-          <div class="font-black text-white mb-3">Tecnologías</div>
-          <p class="text-sm text-slate-400">HTML5 · Tailwind CSS · JavaScript Vanilla · Supabase · PostgreSQL</p>
-        </div>
-        <div>
-          <div class="font-black text-white mb-3">Estado del catálogo</div>
-          <p class="text-sm text-slate-400">Los productos cuya imagen no cargue correctamente se eliminan automáticamente de la vista.</p>
-        </div>
+  <!-- ========================= REDES SOCIALES ========================= -->
+  <section id="redes" class="bg-slate-950 text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+      <div class="text-center">
+        <p class="text-primary-400 font-black uppercase tracking-widest text-xs">Síguenos</p>
+        <h2 class="text-3xl font-black mt-2">Redes sociales</h2>
+        <p class="text-slate-400 mt-3">Mantente al día con nuestras novedades y productos.</p>
       </div>
-      <div class="border-t border-slate-800 mt-10 pt-5 text-xs text-slate-500">
-        © 2026 TodoHogar · Proyecto académico.
+
+      <div class="flex flex-wrap justify-center gap-4 mt-8">
+        <a href="#" class="rounded-2xl bg-white/10 hover:bg-white/15 border border-white/10 px-6 py-3 font-bold transition">Facebook</a>
+        <a href="#" class="rounded-2xl bg-white/10 hover:bg-white/15 border border-white/10 px-6 py-3 font-bold transition">Instagram</a>
+        <a href="#" class="rounded-2xl bg-white/10 hover:bg-white/15 border border-white/10 px-6 py-3 font-bold transition">TikTok</a>
+        <a href="#" class="rounded-2xl bg-white/10 hover:bg-white/15 border border-white/10 px-6 py-3 font-bold transition">WhatsApp</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================= PIE DE PÁGINA ========================= -->
+  <footer class="bg-slate-950 text-slate-400 border-t border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-7 flex flex-col md:flex-row justify-between gap-3">
+      <div>
+        <div class="text-white text-xl font-black">TodoHogar</div>
+        <p class="text-sm mt-1">Electrodomésticos para hacer tu hogar más práctico.</p>
+      </div>
+      <div class="text-sm">
+        © 2026 TodoHogar
       </div>
     </div>
   </footer>
 
-<script>
-  /* ============================================================
-     1. SUPABASE
-     ============================================================ */
-  const SUPABASE_URL = "https://TU-PROYECTO.supabase.co";
-  const SUPABASE_KEY = "TU-ANON-PUBLIC-KEY";
-  let supabaseClient = null;
+  <script>
+    const products = [
+      {
+        id: 1,
+        name: "Refrigeradora French Door RI-992I-NE",
+        category: "Refrigeradoras",
+        description: "Refrigeradora French Door de acabado negro con tecnología Inverter.",
+        price: 1915.00,
+        image: "assets/refrigeradora.png"
+      },
+      {
+        id: 2,
+        name: "Lavadora",
+        category: "Lavadoras",
+        description: "Lavadora de gran capacidad para facilitar el cuidado diario de tu ropa.",
+        price: 435.00,
+        image: "https://www.artefacta.com/media/catalog/product/1/5/158636-1_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1040&width=1040&canvas=1040:1040"
+      },
+      {
+        id: 3,
+        name: "Microondas",
+        category: "Microondas",
+        description: "Microondas práctico para calentar y preparar alimentos rápidamente.",
+        price: 149.99,
+        image: "https://pycca.vteximg.com.br/arquivos/ids/195117-600-600/A01877.jpg?v=637401830101870000"
+      },
+      {
+        id: 4,
+        name: "Licuadora",
+        category: "Licuadoras",
+        description: "Licuadora potente para preparar bebidas, batidos y recetas.",
+        price: 135.00,
+        image: "https://www.artefacta.com/media/catalog/product/4/6/469922800011_1_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1040&width=1040&canvas=1040:1040"
+      },
+      {
+        id: 5,
+        name: "Horno Eléctrico Challenger",
+        category: "Hornos eléctricos",
+        description: "Horno eléctrico de diseño moderno para cocinar y hornear en casa.",
+        price: 439.00,
+        image: "assets/horno-electrico.png"
+      },
+      {
+        id: 6,
+        name: "Cafetera Automática",
+        category: "Cafeteras",
+        description: "Cafetera automática con diseño profesional para preparar café en casa.",
+        price: 595.00,
+        image: "assets/cafetera-automatica.png"
+      },
+      {
+        id: 7,
+        name: "Secadora de Ropa",
+        category: "Secadoras",
+        description: "Secadora de ropa para un secado práctico y eficiente.",
+        price: 729.01,
+        image: "https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcTW1E9KXiQYkG50pNd7n1qruSL1mywxYMl6RuskauqyWudInyJoGQDkhjaCUfMbcGFloag_KT0xEs5nwLXnVBd91fk2BQwWLmj3xC92J7MJ1y_oNmnYVkktTfGg11wryfxw76d6qA&usqp=CAc"
+      }
+    ];
 
-  if (window.supabase &&
-      SUPABASE_URL.startsWith("https://") &&
-      !SUPABASE_URL.includes("TU-PROYECTO") &&
-      SUPABASE_KEY &&
-      !SUPABASE_KEY.includes("TU-ANON")) {
-    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-  }
+    let availableProducts = [];
+    let cart = [];
+    let activeCategory = "Todos";
+    let searchTerm = "";
 
-  /* ============================================================
-     2. PRODUCTOS
-     ============================================================
-     Las tres imágenes proporcionadas por el usuario están guardadas
-     localmente en /assets para que funcionen al subir el proyecto
-     completo a GitHub.
+    const money = value =>
+      new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD"
+      }).format(value);
 
-     Las demás imágenes usan las URLs entregadas por el usuario.
-     Antes de mostrar un producto se comprueba que su imagen cargue.
-     Si la imagen falla, el producto se elimina del catálogo y no se
-     muestra ningún placeholder.
-  */
-  const products = [
-    {
-      id: 1,
-      name: "Refrigeradora French Door RI-992I-NE",
-      category: "Refrigeradoras",
-      description: "Refrigeradora French Door de acabado negro con tecnología Inverter.",
-      price: 1915.00,
-      image: "assets/refrigeradora.png"
-    },
-    {
-      id: 2,
-      name: "Lavadora",
-      category: "Lavadoras",
-      description: "Lavadora de gran capacidad para facilitar el cuidado diario de tu ropa.",
-      price: 435.00,
-      image: "https://www.artefacta.com/media/catalog/product/1/5/158636-1_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1040&width=1040&canvas=1040:1040"
-    },
-    {
-      id: 3,
-      name: "Microondas",
-      category: "Microondas",
-      description: "Microondas práctico para calentar y preparar alimentos rápidamente.",
-      price: 149.99,
-      image: "https://pycca.vteximg.com.br/arquivos/ids/195117-600-600/A01877.jpg?v=637401830101870000"
-    },
-    {
-      id: 4,
-      name: "Licuadora",
-      category: "Licuadoras",
-      description: "Licuadora potente para preparar bebidas, batidos y recetas.",
-      price: 135.00,
-      image: "https://www.artefacta.com/media/catalog/product/4/6/469922800011_1_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1040&width=1040&canvas=1040:1040"
-    },
-    {
-      id: 5,
-      name: "Horno Eléctrico Challenger",
-      category: "Hornos eléctricos",
-      description: "Horno eléctrico de diseño moderno para cocinar y hornear en casa.",
-      price: 439.00,
-      image: "assets/horno-electrico.png"
-    },
-    {
-      id: 6,
-      name: "Cafetera Automática",
-      category: "Cafeteras",
-      description: "Cafetera automática con diseño profesional para preparar café en casa.",
-      price: 595.00,
-      image: "assets/cafetera-automatica.png"
-    },
-    {
-      id: 7,
-      name: "Secadora de Ropa",
-      category: "Secadoras",
-      description: "Secadora de ropa para un secado práctico y eficiente.",
-      price: 729.01,
-      image: "https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcTW1E9KXiQYkG50pNd7n1qruSL1mywxYMl6RuskauqyWudInyJoGQDkhjaCUfMbcGFloag_KT0xEs5nwLXnVBd91fk2BQwWLmj3xC92J7MJ1y_oNmnYVkktTfGg11wryfxw76d6qA&usqp=CAc"
-    }
-  ];
-
-  let availableProducts = [];
-  let cart = [];
-  let activeCategory = "Todos";
-  let searchTerm = "";
-
-  const money = value =>
-    new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(value);
-
-  function imageLoads(url) {
-    return new Promise(resolve => {
-      const img = new Image();
-      img.onload = () => resolve(true);
-      img.onerror = () => resolve(false);
-      img.src = url;
-    });
-  }
-
-  async function validateProductImages() {
-    const checks = await Promise.all(
-      products.map(async product => ({
-        product,
-        valid: await imageLoads(product.image)
-      }))
-    );
-
-    availableProducts = checks
-      .filter(item => item.valid)
-      .map(item => item.product);
-
-    document.getElementById("loadingState").classList.add("hidden");
-    document.getElementById("productGrid").classList.remove("hidden");
-    renderProducts();
-  }
-
-  function renderProducts() {
-    const grid = document.getElementById("productGrid");
-    const empty = document.getElementById("emptyState");
-    const resultCount = document.getElementById("resultCount");
-
-    const filtered = availableProducts.filter(product => {
-      const categoryOK = activeCategory === "Todos" || product.category === activeCategory;
-      const text = `${product.name} ${product.category} ${product.description}`.toLowerCase();
-      return categoryOK && text.includes(searchTerm.toLowerCase());
-    });
-
-    resultCount.textContent = `${filtered.length} producto(s) disponible(s)`;
-    grid.innerHTML = "";
-
-    if (!filtered.length) {
-      empty.classList.remove("hidden");
-      return;
-    }
-    empty.classList.add("hidden");
-
-    filtered.forEach(product => {
-      const card = document.createElement("article");
-      card.className = "product-card bg-white rounded-3xl border border-slate-200 overflow-hidden flex flex-col";
-
-      card.innerHTML = `
-        <div class="h-64 bg-slate-50 flex items-center justify-center overflow-hidden">
-          <img src="${product.image}" alt="${product.name}" class="w-full h-full object-contain" loading="lazy">
-        </div>
-        <div class="p-5 flex flex-col flex-1">
-          <span class="text-[11px] font-black text-primary-600 uppercase tracking-widest">${product.category}</span>
-          <h3 class="mt-2 font-black text-lg text-slate-950 leading-snug">${product.name}</h3>
-          <p class="mt-2 text-sm text-slate-500 line-clamp-2">${product.description}</p>
-          <div class="mt-auto pt-5 flex items-end justify-between gap-3">
-            <div>
-              <div class="text-2xl font-black text-slate-950">${money(product.price)}</div>
-              <div class="text-xs text-slate-400">Precio referencial</div>
-            </div>
-            <button onclick="addToCart(${product.id})"
-              class="rounded-2xl bg-primary-600 hover:bg-primary-700 text-white px-4 py-3 font-black transition">
-              Agregar
-            </button>
-          </div>
-        </div>`;
-      grid.appendChild(card);
-    });
-  }
-
-  function addToCart(productId) {
-    const existing = cart.find(item => item.productId === productId);
-    if (existing) existing.quantity++;
-    else cart.push({ productId, quantity: 1 });
-    renderCart();
-    openCart();
-  }
-
-  function changeQuantity(productId, delta) {
-    const item = cart.find(item => item.productId === productId);
-    if (!item) return;
-    item.quantity += delta;
-    if (item.quantity <= 0) cart = cart.filter(x => x.productId !== productId);
-    renderCart();
-  }
-
-  function removeFromCart(productId) {
-    cart = cart.filter(item => item.productId !== productId);
-    renderCart();
-  }
-
-  function getCartDetails() {
-    return cart.map(item => {
-      const product = availableProducts.find(p => p.id === item.productId);
-      return product ? { ...product, quantity: item.quantity, lineTotal: product.price * item.quantity } : null;
-    }).filter(Boolean);
-  }
-
-  function getTotals() {
-    const details = getCartDetails();
-    const subtotal = details.reduce((sum, item) => sum + item.lineTotal, 0);
-    const iva = subtotal * 0.15;
-    return { details, subtotal, iva, total: subtotal + iva };
-  }
-
-  function renderCart() {
-    const container = document.getElementById("cartItems");
-    const count = cart.reduce((sum, item) => sum + item.quantity, 0);
-    const { details, subtotal, iva, total } = getTotals();
-
-    document.getElementById("cartCount").textContent = count;
-    document.getElementById("cartSubtotal").textContent = money(subtotal);
-    document.getElementById("cartIva").textContent = money(iva);
-    document.getElementById("cartTotal").textContent = money(total);
-    document.getElementById("checkoutButton").disabled = cart.length === 0;
-
-    if (!details.length) {
-      container.innerHTML = `
-        <div class="h-full grid place-items-center text-center text-slate-500 py-16">
-          <div><div class="text-5xl mb-4">🛒</div>
-          <p class="font-black">Tu carrito está vacío</p>
-          <p class="text-sm mt-1">Agrega productos del catálogo.</p></div>
-        </div>`;
-      return;
+    function imageLoads(url) {
+      return new Promise(resolve => {
+        const img = new Image();
+        img.onload = () => resolve(true);
+        img.onerror = () => resolve(false);
+        img.src = url;
+      });
     }
 
-    container.innerHTML = details.map(item => `
-      <div class="border border-slate-200 rounded-2xl p-3">
-        <div class="flex gap-3">
-          <img src="${item.image}" alt="${item.name}" class="w-20 h-20 object-contain rounded-xl bg-slate-50">
-          <div class="flex-1 min-w-0">
-            <div class="font-black text-sm">${item.name}</div>
-            <div class="text-sm text-slate-500 mt-1">${money(item.price)} c/u</div>
-            <div class="mt-2 flex items-center justify-between">
-              <div class="flex items-center gap-2">
-                <button onclick="changeQuantity(${item.id}, -1)" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200">−</button>
-                <span class="font-black w-5 text-center">${item.quantity}</span>
-                <button onclick="changeQuantity(${item.id}, 1)" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200">+</button>
-              </div>
-              <button onclick="removeFromCart(${item.id})" class="text-xs text-red-600 hover:underline">Eliminar</button>
-            </div>
-          </div>
-        </div>
-      </div>`).join("");
-  }
+    async function validateProductImages() {
+      const checks = await Promise.all(
+        products.map(async product => ({
+          product,
+          valid: await imageLoads(product.image)
+        }))
+      );
 
-  function openCart() {
-    document.getElementById("cartOverlay").classList.remove("hidden");
-    document.getElementById("cartPanel").classList.remove("translate-x-full");
-  }
+      availableProducts = checks
+        .filter(item => item.valid)
+        .map(item => item.product);
 
-  function closeCart() {
-    document.getElementById("cartPanel").classList.add("translate-x-full");
-    document.getElementById("cartOverlay").classList.add("hidden");
-  }
-
-  function openPayment() {
-    if (!cart.length) return;
-    const { subtotal, iva, total } = getTotals();
-    document.getElementById("paymentSubtotal").textContent = money(subtotal);
-    document.getElementById("paymentIva").textContent = money(iva);
-    document.getElementById("paymentTotal").textContent = money(total);
-    document.getElementById("paymentMessage").className = "hidden rounded-2xl px-4 py-3 text-sm";
-    document.getElementById("paymentModal").classList.remove("hidden");
-    closeCart();
-  }
-
-  function closePayment() {
-    document.getElementById("paymentModal").classList.add("hidden");
-  }
-
-  function showPaymentMessage(text, success) {
-    const box = document.getElementById("paymentMessage");
-    box.textContent = text;
-    box.className = `rounded-2xl px-4 py-3 text-sm ${success
-      ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-      : "bg-red-50 text-red-700 border border-red-200"}`;
-  }
-
-  function validCardNumber(value) {
-    const digits = value.replace(/\D/g, "");
-    if (digits.length !== 16) return false;
-    let sum = 0, shouldDouble = false;
-    for (let i = digits.length - 1; i >= 0; i--) {
-      let n = Number(digits[i]);
-      if (shouldDouble) { n *= 2; if (n > 9) n -= 9; }
-      sum += n;
-      shouldDouble = !shouldDouble;
+      document.getElementById("loadingState").classList.add("hidden");
+      document.getElementById("productGrid").classList.remove("hidden");
+      renderProducts();
     }
-    return sum % 10 === 0;
-  }
 
-  document.getElementById("cardNumber").addEventListener("input", e => {
-    const digits = e.target.value.replace(/\D/g, "").slice(0, 16);
-    e.target.value = digits.replace(/(.{4})/g, "$1 ").trim();
-  });
+    function renderProducts() {
+      const grid = document.getElementById("productGrid");
+      const empty = document.getElementById("emptyState");
+      const resultCount = document.getElementById("resultCount");
 
-  document.getElementById("cardExpiry").addEventListener("input", e => {
-    const digits = e.target.value.replace(/\D/g, "").slice(0, 4);
-    e.target.value = digits.length > 2 ? digits.slice(0,2) + "/" + digits.slice(2) : digits;
-  });
+      const filtered = availableProducts.filter(product => {
+        const categoryOK =
+          activeCategory === "Todos" || product.category === activeCategory;
 
-  document.getElementById("paymentForm").addEventListener("submit", async e => {
-    e.preventDefault();
+        const text =
+          `${product.name} ${product.category} ${product.description}`.toLowerCase();
 
-    const name = document.getElementById("customerName").value.trim();
-    const email = document.getElementById("customerEmail").value.trim();
-    const cardName = document.getElementById("cardName").value.trim();
-    const cardNumber = document.getElementById("cardNumber").value;
-    const expiry = document.getElementById("cardExpiry").value;
-    const cvc = document.getElementById("cardCvc").value.trim();
+        return categoryOK && text.includes(searchTerm.toLowerCase());
+      });
 
-    if (!name || !email || !cardName) return showPaymentMessage("Completa todos los datos del cliente y titular.", false);
-    if (!validCardNumber(cardNumber)) return showPaymentMessage("El número de tarjeta no es válido. Usa 16 dígitos de prueba.", false);
-    if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(expiry)) return showPaymentMessage("La fecha debe tener el formato MM/AA.", false);
-    if (!/^\d{3,4}$/.test(cvc)) return showPaymentMessage("El CVC debe tener 3 o 4 dígitos.", false);
+      resultCount.textContent = `${filtered.length} producto(s)`;
 
-    const { details, total } = getTotals();
-
-    if (supabaseClient) {
-      try {
-        const { data: cliente, error: clienteError } = await supabaseClient
-          .from("clientes")
-          .insert({ nombre: name, email: email })
-          .select("id")
-          .single();
-
-        if (clienteError) throw clienteError;
-
-        const { data: venta, error: ventaError } = await supabaseClient
-          .from("ventas")
-          .insert({ cliente_id: cliente.id, total: total, fecha: new Date().toISOString() })
-          .select("id")
-          .single();
-
-        if (ventaError) throw ventaError;
-
-        const detalleRows = details.map(item => ({
-          venta_id: venta.id,
-          producto_id: item.id,
-          cantidad: item.quantity,
-          precio_unitario: item.price,
-          subtotal: item.lineTotal
-        }));
-
-        const { error: detalleError } = await supabaseClient
-          .from("detalle_ventas").insert(detalleRows);
-
-        if (detalleError) throw detalleError;
-      } catch (error) {
-        console.error(error);
-        showPaymentMessage("La validación fue correcta, pero no se pudo registrar en Supabase. Revisa tus tablas, RLS y credenciales.", false);
+      if (!filtered.length) {
+        grid.innerHTML = "";
+        empty.classList.remove("hidden");
         return;
       }
+
+      empty.classList.add("hidden");
+      grid.innerHTML = "";
+
+      filtered.forEach(product => {
+        const card = document.createElement("article");
+        card.className =
+          "product-card bg-white rounded-3xl border border-slate-200 overflow-hidden flex flex-col";
+
+        card.innerHTML = `
+          <div class="h-64 bg-slate-50 flex items-center justify-center overflow-hidden">
+            <img src="${product.image}" alt="${product.name}" class="w-full h-full object-contain" loading="lazy">
+          </div>
+          <div class="p-5 flex flex-col flex-1">
+            <span class="text-[11px] font-black text-primary-600 uppercase tracking-widest">${product.category}</span>
+            <h3 class="mt-2 font-black text-lg text-slate-950 leading-snug">${product.name}</h3>
+            <p class="mt-2 text-sm text-slate-500 line-clamp-2">${product.description}</p>
+
+            <div class="mt-auto pt-5 flex items-end justify-between gap-3">
+              <div>
+                <div class="text-2xl font-black text-slate-950">${money(product.price)}</div>
+                <div class="text-xs text-slate-400">Precio</div>
+              </div>
+
+              <button onclick="addToCart(${product.id})"
+                class="rounded-2xl bg-primary-600 hover:bg-primary-700 text-white px-4 py-3 font-black transition">
+                Agregar
+              </button>
+            </div>
+          </div>
+        `;
+
+        grid.appendChild(card);
+      });
     }
 
-    showPaymentMessage("¡Compra procesada correctamente! El pedido quedó registrado.", true);
-    cart = [];
-    renderCart();
-    document.getElementById("paymentForm").reset();
+    function addToCart(productId) {
+      const existing = cart.find(item => item.productId === productId);
 
-    setTimeout(() => {
-      closePayment();
-    }, 1800);
-  });
+      if (existing) {
+        existing.quantity++;
+      } else {
+        cart.push({ productId, quantity: 1 });
+      }
 
-  document.getElementById("cartButton").addEventListener("click", openCart);
-  document.getElementById("closeCart").addEventListener("click", closeCart);
-  document.getElementById("cartOverlay").addEventListener("click", closeCart);
-  document.getElementById("checkoutButton").addEventListener("click", openPayment);
-  document.getElementById("closePayment").addEventListener("click", closePayment);
+      renderCart();
+      openCart();
+    }
 
-  document.querySelectorAll(".category-btn").forEach(button => {
-    button.addEventListener("click", () => {
-      activeCategory = button.dataset.category;
-      document.querySelectorAll(".category-btn").forEach(b => {
-        b.classList.remove("bg-primary-600", "text-white");
-        b.classList.add("bg-slate-100");
+    function changeQuantity(productId, delta) {
+      const item = cart.find(item => item.productId === productId);
+      if (!item) return;
+
+      item.quantity += delta;
+
+      if (item.quantity <= 0) {
+        cart = cart.filter(x => x.productId !== productId);
+      }
+
+      renderCart();
+    }
+
+    function removeFromCart(productId) {
+      cart = cart.filter(item => item.productId !== productId);
+      renderCart();
+    }
+
+    function getCartDetails() {
+      return cart
+        .map(item => {
+          const product = availableProducts.find(p => p.id === item.productId);
+          return product
+            ? {
+                ...product,
+                quantity: item.quantity,
+                lineTotal: product.price * item.quantity
+              }
+            : null;
+        })
+        .filter(Boolean);
+    }
+
+    function getTotals() {
+      const details = getCartDetails();
+      const subtotal = details.reduce((sum, item) => sum + item.lineTotal, 0);
+      const iva = subtotal * 0.15;
+
+      return {
+        details,
+        subtotal,
+        iva,
+        total: subtotal + iva
+      };
+    }
+
+    function renderCart() {
+      const container = document.getElementById("cartItems");
+      const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+      const { details, subtotal, iva, total } = getTotals();
+
+      document.getElementById("cartCount").textContent = count;
+      document.getElementById("cartSubtotal").textContent = money(subtotal);
+      document.getElementById("cartIva").textContent = money(iva);
+      document.getElementById("cartTotal").textContent = money(total);
+      document.getElementById("checkoutButton").disabled = cart.length === 0;
+
+      if (!details.length) {
+        container.innerHTML = `
+          <div class="h-full grid place-items-center text-center text-slate-500 py-16">
+            <div>
+              <div class="text-5xl mb-4">🛒</div>
+              <p class="font-black">Tu carrito está vacío</p>
+              <p class="text-sm mt-1">Agrega productos del catálogo.</p>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = details.map(item => `
+        <div class="border border-slate-200 rounded-2xl p-3">
+          <div class="flex gap-3">
+            <img src="${item.image}" alt="${item.name}"
+              class="w-20 h-20 object-contain rounded-xl bg-slate-50">
+
+            <div class="flex-1 min-w-0">
+              <div class="font-black text-sm">${item.name}</div>
+              <div class="text-sm text-slate-500 mt-1">${money(item.price)} c/u</div>
+
+              <div class="mt-2 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <button onclick="changeQuantity(${item.id}, -1)"
+                    class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200">−</button>
+
+                  <span class="font-black w-5 text-center">${item.quantity}</span>
+
+                  <button onclick="changeQuantity(${item.id}, 1)"
+                    class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200">+</button>
+                </div>
+
+                <button onclick="removeFromCart(${item.id})"
+                  class="text-xs text-red-600 hover:underline">Eliminar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function openCart() {
+      document.getElementById("cartOverlay").classList.remove("hidden");
+      document.getElementById("cartPanel").classList.remove("translate-x-full");
+    }
+
+    function closeCart() {
+      document.getElementById("cartPanel").classList.add("translate-x-full");
+      document.getElementById("cartOverlay").classList.add("hidden");
+    }
+
+    function openOrder() {
+      if (!cart.length) return;
+
+      const { subtotal, iva, total } = getTotals();
+
+      document.getElementById("orderSubtotal").textContent = money(subtotal);
+      document.getElementById("orderIva").textContent = money(iva);
+      document.getElementById("orderTotal").textContent = money(total);
+
+      document.getElementById("orderMessage").className =
+        "hidden rounded-2xl px-4 py-3 text-sm";
+
+      document.getElementById("orderModal").classList.remove("hidden");
+      closeCart();
+    }
+
+    function closeOrder() {
+      document.getElementById("orderModal").classList.add("hidden");
+    }
+
+    function showOrderMessage(text, success) {
+      const box = document.getElementById("orderMessage");
+
+      box.textContent = text;
+      box.className = `rounded-2xl px-4 py-3 text-sm ${
+        success
+          ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+          : "bg-red-50 text-red-700 border border-red-200"
+      }`;
+    }
+
+    document.getElementById("orderForm").addEventListener("submit", event => {
+      event.preventDefault();
+
+      const name = document.getElementById("customerName").value.trim();
+      const phone = document.getElementById("customerPhone").value.trim();
+      const email = document.getElementById("customerEmail").value.trim();
+      const address = document.getElementById("customerAddress").value.trim();
+
+      if (!name || !phone || !email || !address) {
+        showOrderMessage("Completa todos los datos para continuar.", false);
+        return;
+      }
+
+      showOrderMessage(
+        "¡Pedido confirmado! Gracias por elegir TodoHogar.",
+        true
+      );
+
+      cart = [];
+      renderCart();
+      document.getElementById("orderForm").reset();
+
+      setTimeout(() => {
+        closeOrder();
+      }, 1800);
+    });
+
+    document.getElementById("cartButton").addEventListener("click", openCart);
+    document.getElementById("closeCart").addEventListener("click", closeCart);
+    document.getElementById("cartOverlay").addEventListener("click", closeCart);
+
+    document.getElementById("checkoutButton").addEventListener("click", openOrder);
+    document.getElementById("closeOrder").addEventListener("click", closeOrder);
+
+    document.querySelectorAll(".category-btn").forEach(button => {
+      button.addEventListener("click", () => {
+        activeCategory = button.dataset.category;
+
+        document.querySelectorAll(".category-btn").forEach(btn => {
+          btn.classList.remove("bg-primary-600", "text-white");
+          btn.classList.add("bg-slate-100");
+        });
+
+        button.classList.add("bg-primary-600", "text-white");
+        button.classList.remove("bg-slate-100");
+
+        renderProducts();
       });
-      button.classList.add("bg-primary-600", "text-white");
-      button.classList.remove("bg-slate-100");
-      renderProducts();
     });
-  });
 
-  function bindSearch(id) {
-    document.getElementById(id).addEventListener("input", e => {
-      searchTerm = e.target.value.trim();
-      const other = id === "searchInput" ? "searchInputMobile" : "searchInput";
-      document.getElementById(other).value = searchTerm;
-      renderProducts();
-    });
-  }
+    function bindSearch(id) {
+      document.getElementById(id).addEventListener("input", event => {
+        searchTerm = event.target.value.trim();
 
-  bindSearch("searchInput");
-  bindSearch("searchInputMobile");
+        const other =
+          id === "searchInput" ? "searchInputMobile" : "searchInput";
 
-  renderCart();
-  validateProductImages();
+        document.getElementById(other).value = searchTerm;
+        renderProducts();
+      });
+    }
 
-  /* ============================================================
-     3. DDL SUPABASE / POSTGRESQL
-     ============================================================
+    bindSearch("searchInput");
+    bindSearch("searchInputMobile");
 
-     CREATE TABLE productos (
-       id BIGSERIAL PRIMARY KEY,
-       nombre VARCHAR(150) NOT NULL,
-       categoria VARCHAR(100) NOT NULL,
-       descripcion TEXT,
-       precio NUMERIC(12,2) NOT NULL CHECK (precio >= 0),
-       imagen TEXT,
-       created_at TIMESTAMPTZ DEFAULT NOW()
-     );
-
-     CREATE TABLE clientes (
-       id BIGSERIAL PRIMARY KEY,
-       nombre VARCHAR(150) NOT NULL,
-       email VARCHAR(180) NOT NULL,
-       created_at TIMESTAMPTZ DEFAULT NOW()
-     );
-
-     CREATE TABLE ventas (
-       id BIGSERIAL PRIMARY KEY,
-       cliente_id BIGINT REFERENCES clientes(id),
-       total NUMERIC(12,2) NOT NULL,
-       fecha TIMESTAMPTZ DEFAULT NOW()
-     );
-
-     CREATE TABLE detalle_ventas (
-       id BIGSERIAL PRIMARY KEY,
-       venta_id BIGINT NOT NULL REFERENCES ventas(id) ON DELETE CASCADE,
-       producto_id BIGINT REFERENCES productos(id),
-       cantidad INTEGER NOT NULL CHECK (cantidad > 0),
-       precio_unitario NUMERIC(12,2) NOT NULL,
-       subtotal NUMERIC(12,2) NOT NULL
-     );
-
-     IMPORTANTE:
-     - No guardar números de tarjeta ni CVC en Supabase.
-     - En producción, el pago debe pasar por una pasarela segura.
-     - En Supabase configura las políticas RLS apropiadas para tu examen.
-
-     ============================================================
-     4. GITHUB
-     ============================================================
-
-     1) Crear un repositorio llamado TodoHogar.
-     2) Subir index.html y la carpeta assets/.
-     3) En Settings > Pages seleccionar:
-        Branch: main
-        Folder: / (root)
-     4) Guardar y esperar el despliegue.
-     5) También puedes desplegar el mismo proyecto en Vercel.
-
-     ============================================================
-     5. PENTAHO PDI: SUPABASE -> MYSQL
-     ============================================================
-
-     A) Descargar el driver JDBC de PostgreSQL y colocarlo en la carpeta
-        lib de Pentaho Data Integration.
-     B) Reiniciar Spoon.
-     C) Crear conexión PostgreSQL con:
-        Host: el host de tu proyecto Supabase
-        Puerto: 5432
-        Base de datos: postgres
-        Usuario: postgres
-        Contraseña: la contraseña de la base de datos
-     D) Crear una transformación.
-     E) Usar Table Input para consultar productos, clientes, ventas y
-        detalle_ventas.
-     F) Crear una conexión MySQL y configurar:
-        host, puerto 3306, base de datos, usuario y contraseña.
-     G) Usar Table Output para cargar las tablas en MySQL.
-     H) Para una carga más completa, usar pasos de limpieza,
-        transformación, mapeo de tipos y validación antes del Output.
-
-     ============================================================
-     6. MYSQL -> POWER BI
-     ============================================================
-
-     1) Instalar el conector MySQL compatible con Power BI.
-     2) Abrir Power BI Desktop.
-     3) Obtener datos > MySQL database.
-     4) Escribir servidor y base de datos.
-     5) Seleccionar las tablas cargadas por Pentaho.
-     6) En Modelo relacionar:
-          clientes.id -> ventas.cliente_id
-          ventas.id -> detalle_ventas.venta_id
-          productos.id -> detalle_ventas.producto_id
-     7) Crear medidas como:
-          Ventas Totales = SUM(ventas[total])
-          Unidades = SUM(detalle_ventas[cantidad])
-     8) Crear visualizaciones por fecha, producto, categoría y cliente.
-
-     ============================================================
-     7. FLUJO COMPLETO DEL PROYECTO
-     ============================================================
-
-     Usuario -> TodoHogar -> Supabase/PostgreSQL -> Pentaho PDI
-     -> MySQL -> Power BI -> Dashboard.
-
-     Esta sección se deja como documentación académica dentro del
-     index.html para que el proyecto pueda presentarse en el examen.
-  */
-</script>
+    renderCart();
+    validateProductImages();
+  </script>
 </body>
 </html>
