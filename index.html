@@ -1,3037 +1,1857 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TodoHogar | Electrodomésticos para tu hogar</title>
 
-  <meta
-    name="description"
-    content="TodoHogar - Tienda online de electrodomésticos"
-  >
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
 
-  <title>TodoHogar | Electrodomésticos</title>
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <!-- ==========================================================
-       TAILWIND CSS
-       ========================================================== -->
-  <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- ==========================================================
-       SUPABASE
-       ========================================================== -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            primary: "#2563eb",
-            secondary: "#0f172a"
-          }
+    <style>
+        html {
+            scroll-behavior: smooth;
         }
-      }
-    };
-  </script>
+
+        body {
+            background: #f8fafc;
+        }
+
+        .product-card {
+            transition: all 0.3s ease;
+        }
+
+        .product-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 35px rgba(0,0,0,0.10);
+        }
+
+        .product-image {
+            height: 230px;
+            object-fit: contain;
+            width: 100%;
+        }
+
+        .modal {
+            animation: aparecer 0.25s ease;
+        }
+
+        @keyframes aparecer {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+    </style>
 </head>
 
+<body class="text-slate-800">
 
-<body class="bg-slate-50 text-slate-800">
+<!-- =========================================================
+     HEADER
+========================================================= -->
 
-
-  <!-- ==========================================================
-       HEADER
-       ========================================================== -->
-
-  <header class="bg-slate-900 text-white sticky top-0 z-40 shadow-lg">
+<header class="bg-white shadow-md sticky top-0 z-40">
 
     <div class="max-w-7xl mx-auto px-4 py-4">
 
-      <div class="flex flex-col lg:flex-row lg:items-center gap-4">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-4">
 
+            <!-- LOGO -->
+            <div class="flex items-center gap-3">
+                <div class="bg-blue-600 text-white p-3 rounded-xl text-2xl">
+                    🏠
+                </div>
 
-        <!-- LOGO -->
+                <div>
+                    <h1 class="text-2xl font-bold text-blue-700">
+                        TodoHogar
+                    </h1>
 
-        <div class="flex items-center justify-between">
+                    <p class="text-xs text-gray-500">
+                        Electrodomésticos para tu hogar
+                    </p>
+                </div>
+            </div>
 
-          <div>
+            <!-- BUSCADOR -->
+            <div class="w-full md:w-96">
+                <div class="relative">
 
-            <h1 class="text-3xl font-extrabold tracking-tight">
-              Todo<span class="text-blue-400">Hogar</span>
-            </h1>
+                    <input
+                        id="searchInput"
+                        type="text"
+                        placeholder="Buscar productos..."
+                        class="w-full border border-gray-300 rounded-xl px-4 py-3 pl-11 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
 
-            <p class="text-xs text-slate-400">
-              Todo para tu hogar
-            </p>
+                    <span class="absolute left-4 top-3.5">
+                        🔎
+                    </span>
 
-          </div>
+                </div>
+            </div>
 
-
-          <!-- CARRITO MÓVIL -->
-
-          <button
-            onclick="toggleCart()"
-            class="lg:hidden relative bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg"
-          >
-
-            🛒
-
-            <span
-              id="cartCountMobile"
-              class="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center"
+            <!-- CARRITO -->
+            <button
+                onclick="abrirCarrito()"
+                class="relative bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl font-semibold transition"
             >
-              0
-            </span>
 
-          </button>
+                🛒 Carrito
 
-        </div>
+                <span
+                    id="cartCount"
+                    class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center"
+                >
+                    0
+                </span>
 
-
-        <!-- BUSCADOR -->
-
-        <div class="flex-1">
-
-          <input
-            id="searchInput"
-            type="text"
-            placeholder="¿Qué electrodoméstico estás buscando?"
-            class="w-full px-4 py-3 rounded-lg text-slate-800 outline-none focus:ring-2 focus:ring-blue-500"
-            oninput="renderProducts()"
-          >
+            </button>
 
         </div>
 
-
-        <!-- CARRITO DESKTOP -->
-
-        <button
-          onclick="toggleCart()"
-          class="hidden lg:flex items-center gap-2 bg-blue-600 hover:bg-blue-700 px-5 py-3 rounded-lg font-semibold transition relative"
-        >
-
-          🛒 Carrito
-
-          <span
-            id="cartCount"
-            class="bg-red-500 text-white text-xs w-6 h-6 rounded-full flex items-center justify-center"
-          >
-            0
-          </span>
-
-        </button>
-
-      </div>
-
     </div>
 
-  </header>
+</header>
 
 
+<!-- =========================================================
+     HERO
+========================================================= -->
 
-  <!-- ==========================================================
-       CATEGORÍAS
-       ========================================================== -->
+<section class="bg-gradient-to-r from-blue-700 to-blue-500 text-white">
 
-  <section class="bg-white border-b">
+    <div class="max-w-7xl mx-auto px-4 py-16 text-center">
 
-    <div class="max-w-7xl mx-auto px-4 py-4">
-
-      <div class="flex flex-wrap gap-2">
-
-        <button
-          onclick="setCategory('Todos')"
-          class="category-btn bg-blue-600 text-white px-4 py-2 rounded-full"
-          data-category="Todos"
-        >
-          Todos
-        </button>
-
-
-        <button
-          onclick="setCategory('Refrigeración')"
-          class="category-btn bg-slate-100 hover:bg-slate-200 px-4 py-2 rounded-full"
-          data-category="Refrigeración"
-        >
-          Refrigeración
-        </button>
-
-
-        <button
-          onclick="setCategory('Lavado')"
-          class="category-btn bg-slate-100 hover:bg-slate-200 px-4 py-2 rounded-full"
-          data-category="Lavado"
-        >
-          Lavado
-        </button>
-
-
-        <button
-          onclick="setCategory('Cocina')"
-          class="category-btn bg-slate-100 hover:bg-slate-200 px-4 py-2 rounded-full"
-          data-category="Cocina"
-        >
-          Cocina
-        </button>
-
-
-        <button
-          onclick="setCategory('Electrodomésticos pequeños')"
-          class="category-btn bg-slate-100 hover:bg-slate-200 px-4 py-2 rounded-full"
-          data-category="Electrodomésticos pequeños"
-        >
-          Pequeños
-        </button>
-
-      </div>
-
-    </div>
-
-  </section>
-
-
-
-  <!-- ==========================================================
-       HERO
-       ========================================================== -->
-
-  <section class="bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-700 text-white">
-
-    <div class="max-w-7xl mx-auto px-4 py-16">
-
-      <div class="max-w-3xl">
-
-        <span class="inline-block bg-white/20 px-4 py-2 rounded-full text-sm mb-5">
-          🏠 Todo lo que necesitas para tu hogar
-        </span>
-
-
-        <h2 class="text-4xl md:text-6xl font-extrabold mb-5">
-          Bienvenido a TodoHogar
+        <h2 class="text-4xl md:text-5xl font-extrabold mb-4">
+            Todo lo que tu hogar necesita
         </h2>
 
-
-        <p class="text-blue-100 text-lg md:text-xl mb-7">
-          Encuentra electrodomésticos modernos, eficientes y de excelente
-          calidad para hacer tu hogar más cómodo.
+        <p class="text-lg text-blue-100 max-w-2xl mx-auto">
+            Encuentra refrigeradoras, lavadoras, microondas,
+            licuadoras y mucho más en TodoHogar.
         </p>
 
-
         <button
-          onclick="document.getElementById('productGrid').scrollIntoView({behavior:'smooth'})"
-          class="bg-white text-blue-700 px-6 py-3 rounded-lg font-bold hover:bg-slate-100 transition"
+            onclick="document.getElementById('catalogo').scrollIntoView()"
+            class="mt-8 bg-white text-blue-700 px-7 py-3 rounded-xl font-bold hover:bg-gray-100 transition"
         >
-          Ver productos
+            Ver productos
         </button>
-
-      </div>
 
     </div>
 
-  </section>
+</section>
 
 
+<!-- =========================================================
+     CATEGORÍAS
+========================================================= -->
 
-  <!-- ==========================================================
-       CATÁLOGO
-       ========================================================== -->
+<section class="max-w-7xl mx-auto px-4 py-8">
 
-  <main class="max-w-7xl mx-auto px-4 py-12">
+    <div class="flex flex-wrap justify-center gap-3">
 
-    <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3 mb-8">
+        <button
+            onclick="filtrarCategoria('Todos')"
+            class="categoria-btn bg-blue-600 text-white px-5 py-2 rounded-full"
+        >
+            Todos
+        </button>
 
-      <div>
+        <button
+            onclick="filtrarCategoria('Refrigeración')"
+            class="categoria-btn bg-white border px-5 py-2 rounded-full hover:bg-blue-50"
+        >
+            Refrigeración
+        </button>
 
-        <h2 class="text-3xl font-bold text-slate-900">
-          Nuestros productos
+        <button
+            onclick="filtrarCategoria('Lavado')"
+            class="categoria-btn bg-white border px-5 py-2 rounded-full hover:bg-blue-50"
+        >
+            Lavado
+        </button>
+
+        <button
+            onclick="filtrarCategoria('Cocina')"
+            class="categoria-btn bg-white border px-5 py-2 rounded-full hover:bg-blue-50"
+        >
+            Cocina
+        </button>
+
+        <button
+            onclick="filtrarCategoria('Electrodomésticos pequeños')"
+            class="categoria-btn bg-white border px-5 py-2 rounded-full hover:bg-blue-50"
+        >
+            Electrodomésticos pequeños
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     CATÁLOGO
+========================================================= -->
+
+<main
+    id="catalogo"
+    class="max-w-7xl mx-auto px-4 pb-16"
+>
+
+    <div class="mb-8">
+
+        <h2 class="text-3xl font-bold">
+            Nuestros productos
         </h2>
 
-        <p class="text-slate-500">
-          Encuentra todo para tu hogar
+        <p class="text-gray-500">
+            Productos seleccionados para equipar tu hogar.
         </p>
 
-      </div>
-
-
-      <span
-        id="productCount"
-        class="text-sm text-slate-500"
-      >
-      </span>
-
     </div>
 
-
-    <!-- PRODUCTOS -->
-
     <div
-      id="productGrid"
-      class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
-    ></div>
-
-
-    <!-- SIN RESULTADOS -->
-
-    <div
-      id="emptyProducts"
-      class="hidden text-center py-20"
+        id="productGrid"
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
     >
-
-      <div class="text-6xl mb-5">
-        🔍
-      </div>
-
-      <h3 class="text-xl font-semibold">
-        No encontramos productos
-      </h3>
-
-      <p class="text-slate-500 mt-2">
-        Intenta cambiar tu búsqueda o categoría.
-      </p>
-
     </div>
 
-  </main>
+</main>
 
 
+<!-- =========================================================
+     CARRITO MODAL
+========================================================= -->
 
-  <!-- ==========================================================
-       CARRITO
-       ========================================================== -->
-
-  <div
-    id="cartOverlay"
-    class="fixed inset-0 bg-black/50 z-50 hidden"
-    onclick="closeCartFromOverlay(event)"
-  >
-
-    <aside
-      class="absolute right-0 top-0 h-full w-full sm:w-[430px] bg-white shadow-2xl flex flex-col"
-    >
-
-
-      <!-- CABECERA -->
-
-      <div class="flex items-center justify-between p-5 border-b">
-
-        <div>
-
-          <h2 class="text-xl font-bold">
-            🛒 Tu carrito
-          </h2>
-
-          <p class="text-xs text-slate-500">
-            Productos seleccionados
-          </p>
-
-        </div>
-
-
-        <button
-          onclick="toggleCart()"
-          class="text-3xl text-slate-500 hover:text-slate-900"
-        >
-          &times;
-        </button>
-
-      </div>
-
-
-
-      <!-- PRODUCTOS -->
-
-      <div
-        id="cartItems"
-        class="flex-1 overflow-y-auto p-5 space-y-4"
-      ></div>
-
-
-
-      <!-- TOTALES -->
-
-      <div class="border-t p-5 bg-slate-50">
-
-        <div class="flex justify-between mb-2">
-
-          <span>
-            Subtotal
-          </span>
-
-          <span id="cartSubtotal">
-            $0.00
-          </span>
-
-        </div>
-
-
-        <div class="flex justify-between mb-2">
-
-          <span>
-            IVA (15%)
-          </span>
-
-          <span id="cartTax">
-            $0.00
-          </span>
-
-        </div>
-
-
-        <div class="flex justify-between text-xl font-bold border-t pt-3">
-
-          <span>
-            Total
-          </span>
-
-          <span id="cartTotal">
-            $0.00
-          </span>
-
-        </div>
-
-
-        <button
-          onclick="openCheckout()"
-          id="checkoutButton"
-          class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg mt-5 font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          Proceder al pago
-        </button>
-
-      </div>
-
-    </aside>
-
-  </div>
-
-
-
-  <!-- ==========================================================
-       MODAL DE PAGO
-       ========================================================== -->
-
-  <div
-    id="checkoutModal"
-    class="fixed inset-0 bg-black/60 z-[60] hidden items-center justify-center p-4"
-  >
+<div
+    id="cartModal"
+    class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+>
 
     <div
-      class="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[95vh] overflow-y-auto"
+        class="modal bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
     >
 
-
-      <!-- CABECERA -->
-
-      <div class="p-6 border-b">
-
-        <div class="flex justify-between items-center">
-
-          <div>
+        <div class="flex justify-between items-center p-6 border-b">
 
             <h2 class="text-2xl font-bold">
-              Finalizar compra
+                🛒 Mi carrito
             </h2>
 
-            <p class="text-sm text-slate-500">
-              Completa tus datos para realizar tu pedido
-            </p>
-
-          </div>
-
-
-          <button
-            onclick="closeCheckout()"
-            class="text-3xl text-slate-500 hover:text-slate-900"
-          >
-            &times;
-          </button>
+            <button
+                onclick="cerrarCarrito()"
+                class="text-gray-500 hover:text-red-500 text-2xl"
+            >
+                ✕
+            </button>
 
         </div>
 
-      </div>
+        <div
+            id="cartItems"
+            class="p-6"
+        >
+        </div>
 
+        <div class="border-t p-6">
 
+            <div class="flex justify-between mb-2">
+                <span>Subtotal:</span>
+                <strong id="subtotal">$0.00</strong>
+            </div>
 
-      <!-- FORMULARIO -->
+            <div class="flex justify-between mb-2">
+                <span>IVA (15%):</span>
+                <strong id="iva">$0.00</strong>
+            </div>
 
-      <form
-        id="paymentForm"
-        class="p-6 space-y-6"
-      >
+            <div class="flex justify-between text-xl font-bold border-t pt-3">
+                <span>Total:</span>
+                <strong id="total">$0.00</strong>
+            </div>
 
-
-        <!-- CLIENTE -->
-
-        <div>
-
-          <h3 class="font-bold text-lg mb-4">
-            👤 Datos del cliente
-          </h3>
-
-
-          <div class="space-y-3">
-
-            <input
-              id="customerName"
-              type="text"
-              placeholder="Nombre completo"
-              class="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none"
-              required
+            <button
+                onclick="abrirPago()"
+                class="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl mt-5 font-bold"
             >
-
-
-            <input
-              id="customerEmail"
-              type="email"
-              placeholder="Correo electrónico"
-              class="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none"
-              required
-            >
-
-
-            <input
-              id="customerPhone"
-              type="tel"
-              placeholder="Número de teléfono"
-              class="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none"
-              required
-            >
-
-          </div>
+                💳 Proceder al pago
+            </button>
 
         </div>
 
+    </div>
+
+</div>
 
 
-        <!-- TARJETA -->
+<!-- =========================================================
+     MODAL DE PAGO
+========================================================= -->
 
-        <div>
+<div
+    id="paymentModal"
+    class="hidden fixed inset-0 bg-black/50 z-[60] flex items-center justify-center p-4"
+>
 
-          <h3 class="font-bold text-lg mb-4">
-            💳 Información de pago
-          </h3>
+    <div
+        class="modal bg-white rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto"
+    >
 
+        <div class="flex justify-between items-center p-6 border-b">
 
-          <div class="space-y-3">
+            <h2 class="text-2xl font-bold">
+                💳 Pago seguro
+            </h2>
 
-            <input
-              id="cardName"
-              type="text"
-              placeholder="Nombre del titular"
-              class="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none"
-              required
+            <button
+                onclick="cerrarPago()"
+                class="text-gray-500 hover:text-red-500 text-2xl"
             >
+                ✕
+            </button>
 
+        </div>
 
-            <input
-              id="cardNumber"
-              type="text"
-              inputmode="numeric"
-              maxlength="19"
-              placeholder="Número de tarjeta"
-              class="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none"
-              required
-            >
+        <form
+            id="paymentForm"
+            class="p-6 space-y-4"
+        >
 
+            <div>
+                <label class="block font-semibold mb-1">
+                    Nombre del titular
+                </label>
 
-            <div class="grid grid-cols-2 gap-3">
+                <input
+                    id="cardName"
+                    type="text"
+                    class="w-full border rounded-xl px-4 py-3"
+                    placeholder="Juan Pérez"
+                    required
+                >
+            </div>
 
-              <input
-                id="cardExpiry"
-                type="text"
-                maxlength="5"
-                placeholder="MM/AA"
-                class="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none"
-                required
-              >
+            <div>
+                <label class="block font-semibold mb-1">
+                    Número de tarjeta
+                </label>
 
+                <input
+                    id="cardNumber"
+                    type="text"
+                    maxlength="19"
+                    class="w-full border rounded-xl px-4 py-3"
+                    placeholder="1234 5678 9012 3456"
+                    required
+                >
+            </div>
 
-              <input
-                id="cardCvc"
-                type="password"
-                inputmode="numeric"
-                maxlength="4"
-                placeholder="CVC"
-                class="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none"
-                required
-              >
+            <div class="grid grid-cols-2 gap-4">
+
+                <div>
+                    <label class="block font-semibold mb-1">
+                        Fecha MM/AA
+                    </label>
+
+                    <input
+                        id="cardDate"
+                        type="text"
+                        maxlength="5"
+                        class="w-full border rounded-xl px-4 py-3"
+                        placeholder="12/30"
+                        required
+                    >
+                </div>
+
+                <div>
+                    <label class="block font-semibold mb-1">
+                        CVC
+                    </label>
+
+                    <input
+                        id="cardCvc"
+                        type="password"
+                        maxlength="4"
+                        class="w-full border rounded-xl px-4 py-3"
+                        placeholder="123"
+                        required
+                    >
+                </div>
 
             </div>
 
-          </div>
+            <div>
+                <label class="block font-semibold mb-1">
+                    Nombre del cliente
+                </label>
 
-        </div>
+                <input
+                    id="customerName"
+                    type="text"
+                    class="w-full border rounded-xl px-4 py-3"
+                    placeholder="Nombre completo"
+                    required
+                >
+            </div>
 
+            <div>
+                <label class="block font-semibold mb-1">
+                    Correo electrónico
+                </label>
 
+                <input
+                    id="customerEmail"
+                    type="email"
+                    class="w-full border rounded-xl px-4 py-3"
+                    placeholder="correo@email.com"
+                    required
+                >
+            </div>
 
-        <!-- RESUMEN -->
+            <button
+                type="submit"
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-bold"
+            >
+                Confirmar compra
+            </button>
 
-        <div class="bg-slate-100 rounded-xl p-4">
-
-          <div class="flex justify-between mb-2">
-
-            <span>
-              Subtotal
-            </span>
-
-            <span id="checkoutSubtotal">
-              $0.00
-            </span>
-
-          </div>
-
-
-          <div class="flex justify-between mb-2">
-
-            <span>
-              IVA
-            </span>
-
-            <span id="checkoutTax">
-              $0.00
-            </span>
-
-          </div>
-
-
-          <div class="flex justify-between font-bold text-lg border-t pt-3">
-
-            <span>
-              Total a pagar
-            </span>
-
-            <span id="checkoutTotal">
-              $0.00
-            </span>
-
-          </div>
-
-        </div>
-
-
-
-        <!-- MENSAJE -->
-
-        <div
-          id="paymentMessage"
-          class="hidden rounded-lg p-3 text-sm"
-        ></div>
-
-
-
-        <!-- PAGAR -->
-
-        <button
-          type="submit"
-          id="payButton"
-          class="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-bold transition"
-        >
-          Confirmar y pagar
-        </button>
-
-
-        <p class="text-xs text-slate-400 text-center">
-          🔒 Esta demostración no almacena los datos de la tarjeta.
-        </p>
-
-      </form>
+        </form>
 
     </div>
 
-  </div>
+</div>
 
 
+<!-- =========================================================
+     JAVASCRIPT
+========================================================= -->
 
-  <!-- ==========================================================
-       FOOTER
-       ========================================================== -->
+<script>
 
-  <footer class="bg-slate-900 text-white mt-16">
-
-    <div class="max-w-7xl mx-auto px-4 py-12">
-
-      <div class="text-center">
-
-        <h2 class="text-3xl font-extrabold">
-          Todo<span class="text-blue-400">Hogar</span>
-        </h2>
-
-
-        <p class="text-slate-400 mt-3">
-          Todo lo que necesitas para hacer de tu casa un hogar.
-        </p>
-
-
-        <div class="flex justify-center gap-6 mt-6 text-slate-400 text-sm">
-
-          <span>
-            🏠 Hogar
-          </span>
-
-          <span>
-            ⚡ Tecnología
-          </span>
-
-          <span>
-            🛒 Compras
-          </span>
-
-        </div>
-
-
-        <div class="border-t border-slate-800 mt-8 pt-6">
-
-          <p class="text-slate-500 text-sm">
-            © 2026 TodoHogar - Proyecto académico
-          </p>
-
-        </div>
-
-      </div>
-
-    </div>
-
-  </footer>
-
-
-
-  <!-- ==========================================================
-       JAVASCRIPT
-       ========================================================== -->
-
-  <script>
-
-
-    /* ==========================================================
+    /* =====================================================
        SUPABASE
-       ========================================================== */
+    ===================================================== */
 
-    const SUPABASE_URL =
-      "https://TU-PROYECTO.supabase.co";
-
-    const SUPABASE_KEY =
-      "TU_ANON_PUBLIC_KEY";
-
+    const SUPABASE_URL = "TU_SUPABASE_URL";
+    const SUPABASE_KEY = "TU_SUPABASE_ANON_KEY";
 
     let supabaseClient = null;
 
-
     if (
-      SUPABASE_URL !==
-        "https://TU-PROYECTO.supabase.co" &&
-      SUPABASE_KEY !==
-        "TU_ANON_PUBLIC_KEY"
+        SUPABASE_URL !== "TU_SUPABASE_URL" &&
+        SUPABASE_KEY !== "TU_SUPABASE_ANON_KEY"
     ) {
-
-      supabaseClient =
-        window.supabase.createClient(
-          SUPABASE_URL,
-          SUPABASE_KEY
+        supabaseClient = window.supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_KEY
         );
-
     }
 
 
-
-    /* ==========================================================
-       CATÁLOGO DE PRODUCTOS
-       ==========================================================
-
-       IMPORTANTE:
-       Las imágenes fueron seleccionadas para que correspondan
-       visualmente con el producto de cada tarjeta.
-       ========================================================== */
-
-    const products = [
-
-
-      /* ========================================================
-         1. REFRIGERADORA MODERNA
-         ======================================================== */
-
-      {
-        id: 1,
-
-        name:
-          "Refrigeradora Moderna French Door",
-
-        category:
-          "Refrigeración",
-
-        description:
-          "Refrigeradora moderna de gran capacidad con diseño French Door y acabado elegante.",
-
-        price:
-          899.99,
-
-        image:
-          "https://images.unsplash.com/photo-1571175443880-49e1d25b2bc5?auto=format&fit=crop&w=1000&q=85"
-      },
-
-
-      /* ========================================================
-         2. LAVADORA
-         ======================================================== */
-
-      {
-        id: 2,
-
-        name:
-          "Lavadora LG Smart",
-
-        category:
-          "Lavado",
-
-        description:
-          "Lavadora automática inteligente de alta eficiencia para el hogar.",
-
-        price:
-          649.99,
-
-        image:
-          "https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?auto=format&fit=crop&w=1000&q=85"
-      },
-
-
-      /* ========================================================
-         3. MICROONDAS
-         ======================================================== */
-
-      {
-        id: 3,
-
-        name:
-          "Microondas Digital",
-
-        category:
-          "Cocina",
-
-        description:
-          "Microondas digital compacto con controles sencillos y múltiples funciones.",
-
-        price:
-          149.99,
-
-        image:
-          "https://images.unsplash.com/photo-1585659722983-3a675dabf23d?auto=format&fit=crop&w=1000&q=85"
-      },
-
-
-      /* ========================================================
-         4. LICUADORA
-         ======================================================== */
-
-      {
-        id: 4,
-
-        name:
-          "Licuadora Profesional",
-
-        category:
-          "Electrodomésticos pequeños",
-
-        description:
-          "Licuadora de alta potencia para preparar batidos, jugos y diferentes recetas.",
-
-        price:
-          89.99,
-
-        image:
-          "https://images.unsplash.com/photo-1570222094114-d054a817e56b?auto=format&fit=crop&w=1000&q=85"
-      },
-
-
-      /* ========================================================
-         5. HORNO ELÉCTRICO
-         ======================================================== */
-
-      {
-        id: 5,
-
-        name:
-          "Horno Eléctrico Moderno",
-
-        category:
-          "Cocina",
-
-        description:
-          "Horno eléctrico moderno con panel de control digital y amplio espacio interior.",
-
-        price:
-          229.99,
-
-        /*
-          IMAGEN CORREGIDA:
-          Horno eléctrico integrado en una cocina.
-        */
-
-        image:
-          "https://images.unsplash.com/photo-1600566753051-f0b89df2dd90?auto=format&fit=crop&w=1000&q=85"
-      },
-
-
-      /* ========================================================
-         6. CAFETERA AUTOMÁTICA
-         ======================================================== */
-
-      {
-        id: 6,
-
-        name:
-          "Cafetera Automática",
-
-        category:
-          "Electrodomésticos pequeños",
-
-        description:
-          "Cafetera automática moderna para preparar café de manera rápida y sencilla.",
-
-        price:
-          119.99,
-
-        /*
-          IMAGEN CORREGIDA:
-          Se muestra la máquina de café, no vasos sueltos.
-        */
-
-        image:
-          "https://images.unsplash.com/photo-1517668808822-63429a6f1e55?auto=format&fit=crop&w=1000&q=85"
-      },
-
-
-      /* ========================================================
-         7. COCINA DE INDUCCIÓN
-         ======================================================== */
-
-      {
-        id: 7,
-
-        name:
-          "Cocina de Inducción",
-
-        category:
-          "Cocina",
-
-        description:
-          "Cocina de inducción moderna con superficie de vidrio y controles digitales.",
-
-        price:
-          329.99,
-
-        /*
-          IMAGEN CORREGIDA:
-          Cocina de inducción sin personas.
-        */
-
-        image:
-          "https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&w=1000&q=85"
-      },
-
-
-      /* ========================================================
-         8. SECADORA DE ROPA
-         ======================================================== */
-
-      {
-        id: 8,
-
-        name:
-          "Secadora de Ropa",
-
-        category:
-          "Lavado",
-
-        description:
-          "Secadora de ropa de alta eficiencia para secar tus prendas rápidamente.",
-
-        price:
-          579.99,
-
-        /*
-          IMAGEN CORREGIDA:
-          Se utiliza una imagen de máquinas secadoras.
-        */
-
-        image:
-          "https://images.unsplash.com/photo-1604335399105-a0c585fd81a1?auto=format&fit=crop&w=1000&q=85"
-      }
+    /* =====================================================
+       PRODUCTOS
+    ===================================================== */
+
+    const productos = [
+
+        {
+            id: 1,
+            nombre: "Refrigeradora French Door RI-992I NE",
+            categoria: "Refrigeración",
+            descripcion: "Refrigeradora moderna French Door de gran capacidad.",
+            precio: 1915.00,
+            imagen: "https://www.indurama.com/refrigeradora-french-door-ri-992i-ne/p"
+        },
+
+        {
+            id: 2,
+            nombre: "Lavadora",
+            categoria: "Lavado",
+            descripcion: "Lavadora moderna para facilitar el cuidado de tu ropa.",
+            precio: 435.00,
+            imagen: "https://www.artefacta.com/media/catalog/product/1/5/158636-1_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1040&width=1040&canvas=1040:1040"
+        },
+
+        {
+            id: 3,
+            nombre: "Microondas",
+            categoria: "Cocina",
+            descripcion: "Microondas práctico para calentar y preparar tus alimentos.",
+            precio: 149.99,
+            imagen: "https://pycca.vteximg.com.br/arquivos/ids/195117-600-600/A01877.jpg?v=637401830101870000"
+        },
+
+        {
+            id: 4,
+            nombre: "Licuadora",
+            categoria: "Electrodomésticos pequeños",
+            descripcion: "Licuadora potente para preparar bebidas y alimentos.",
+            precio: 135.00,
+            imagen: "https://www.artefacta.com/media/catalog/product/4/6/469922800011_1_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1040&width=1040&canvas=1040:1040"
+        },
+
+        {
+            id: 5,
+            nombre: "Horno eléctrico",
+            categoria: "Cocina",
+            descripcion: "Horno eléctrico ideal para preparar diferentes recetas.",
+            precio: 439.00,
+            imagen: "imagenes/horno.webp"
+        },
+
+        {
+            id: 6,
+            nombre: "Cafetera automática",
+            categoria: "Electrodomésticos pequeños",
+            descripcion: "Cafetera automática para disfrutar café preparado en casa.",
+            precio: 595.00,
+            imagen: "imagenes/cafetera.webp"
+        },
+
+        {
+            id: 7,
+            nombre: "Cocina de inducción",
+            categoria: "Cocina",
+            descripcion: "Cocina de inducción moderna y eficiente.",
+            precio: 194.00,
+            imagen: "imagenes/cocina-induccion.webp"
+        },
+
+        {
+            id: 8,
+            nombre: "Secadora de ropa",
+            categoria: "Lavado",
+            descripcion: "Secadora de ropa práctica para un secado rápido y eficiente.",
+            precio: 729.01,
+            imagen: "https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcTW1E9KXiQYkG50pNd7n1qruSL1mywxYMl6RuskauqyWudInyJoGQDkhjaCUfMbcGFloag_KT0xEs5nwLXnVBd91fk2BQwWLmj3xC92J7MJ1y_oNmnYVkktTfGg11wryfxw76d6qA&usqp=CAc"
+        }
 
     ];
 
 
+    /* =====================================================
+       CARRITO
+    ===================================================== */
 
-    /* ==========================================================
-       VARIABLES
-       ========================================================== */
+    let carrito = [];
 
-    let cart = [];
-
-    let selectedCategory =
-      "Todos";
-
-    const IVA =
-      0.15;
+    let categoriaActual = "Todos";
 
 
+    function renderProductos() {
 
-    /* ==========================================================
-       MONEDA
-       ========================================================== */
+        const grid = document.getElementById("productGrid");
 
-    function formatCurrency(value) {
+        const busqueda =
+            document.getElementById("searchInput").value
+            .toLowerCase()
+            .trim();
 
-      return new Intl.NumberFormat(
-        "es-EC",
-        {
-          style: "currency",
-          currency: "USD"
+        const productosFiltrados = productos.filter(producto => {
+
+            const coincideCategoria =
+                categoriaActual === "Todos" ||
+                producto.categoria === categoriaActual;
+
+            const coincideBusqueda =
+                producto.nombre.toLowerCase().includes(busqueda) ||
+                producto.descripcion.toLowerCase().includes(busqueda);
+
+            return coincideCategoria && coincideBusqueda;
+
+        });
+
+
+        if (productosFiltrados.length === 0) {
+
+            grid.innerHTML = `
+                <div class="col-span-full text-center py-16">
+                    <div class="text-6xl mb-4">🔎</div>
+                    <h3 class="text-2xl font-bold">
+                        No encontramos productos
+                    </h3>
+                    <p class="text-gray-500 mt-2">
+                        Intenta con otra búsqueda.
+                    </p>
+                </div>
+            `;
+
+            return;
         }
-      ).format(value);
-
-    }
 
 
+        grid.innerHTML = productosFiltrados.map(producto => `
 
-    /* ==========================================================
-       MOSTRAR PRODUCTOS
-       ========================================================== */
+            <div class="product-card bg-white rounded-2xl overflow-hidden border">
 
-    function renderProducts() {
+                <div class="bg-gray-50 p-4">
 
-      const grid =
-        document.getElementById(
-          "productGrid"
-        );
-
-
-      const search =
-        document
-          .getElementById(
-            "searchInput"
-          )
-          .value
-          .toLowerCase()
-          .trim();
-
-
-      const filteredProducts =
-        products.filter(
-          product => {
-
-            const matchesCategory =
-              selectedCategory ===
-                "Todos" ||
-              product.category ===
-                selectedCategory;
-
-
-            const matchesSearch =
-              product.name
-                .toLowerCase()
-                .includes(search) ||
-
-              product.description
-                .toLowerCase()
-                .includes(search);
-
-
-            return (
-              matchesCategory &&
-              matchesSearch
-            );
-
-          }
-        );
-
-
-      document.getElementById(
-        "productCount"
-      ).textContent =
-        `${filteredProducts.length} productos`;
-
-
-      if (
-        filteredProducts.length ===
-        0
-      ) {
-
-        grid.innerHTML = "";
-
-        document
-          .getElementById(
-            "emptyProducts"
-          )
-          .classList.remove(
-            "hidden"
-          );
-
-        return;
-
-      }
-
-
-      document
-        .getElementById(
-          "emptyProducts"
-        )
-        .classList.add(
-          "hidden"
-        );
-
-
-      grid.innerHTML =
-        filteredProducts
-          .map(
-            product => `
-
-              <article
-                class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition border border-slate-100"
-              >
-
-                <div class="h-56 overflow-hidden bg-slate-100">
-
-                  <img
-                    src="${product.image}"
-                    alt="${product.name}"
-                    class="w-full h-full object-cover hover:scale-105 transition duration-500"
-                    loading="lazy"
-                  >
+                    <img
+                        src="${producto.imagen}"
+                        alt="${producto.nombre}"
+                        class="product-image"
+                        onerror="this.onerror=null; this.src='https://placehold.co/600x400?text=TodoHogar';"
+                    >
 
                 </div>
-
 
                 <div class="p-5">
 
-                  <span
-                    class="inline-block text-xs font-semibold bg-blue-100 text-blue-700 px-3 py-1 rounded-full mb-3"
-                  >
-                    ${product.category}
-                  </span>
-
-
-                  <h3 class="font-bold text-xl mb-2">
-                    ${product.name}
-                  </h3>
-
-
-                  <p class="text-slate-500 text-sm min-h-[48px]">
-                    ${product.description}
-                  </p>
-
-
-                  <div class="flex items-center justify-between mt-5 gap-2">
-
-                    <span class="text-xl font-bold text-blue-600">
-                      ${formatCurrency(product.price)}
+                    <span class="text-xs font-semibold text-blue-600 uppercase">
+                        ${producto.categoria}
                     </span>
 
-
-                    <button
-                      onclick="addToCart(${product.id})"
-                      class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold whitespace-nowrap"
-                    >
-                      + Agregar
-                    </button>
-
-                  </div>
-
-                </div>
-
-              </article>
-
-            `
-          )
-          .join("");
-
-    }
-
-
-
-    /* ==========================================================
-       CATEGORÍA
-       ========================================================== */
-
-    function setCategory(
-      category
-    ) {
-
-      selectedCategory =
-        category;
-
-
-      document
-        .querySelectorAll(
-          ".category-btn"
-        )
-        .forEach(
-          button => {
-
-            if (
-              button.dataset.category ===
-              category
-            ) {
-
-              button.classList.remove(
-                "bg-slate-100"
-              );
-
-              button.classList.add(
-                "bg-blue-600",
-                "text-white"
-              );
-
-            } else {
-
-              button.classList.remove(
-                "bg-blue-600",
-                "text-white"
-              );
-
-              button.classList.add(
-                "bg-slate-100"
-              );
-
-            }
-
-          }
-        );
-
-
-      renderProducts();
-
-    }
-
-
-
-    /* ==========================================================
-       AGREGAR CARRITO
-       ========================================================== */
-
-    function addToCart(
-      productId
-    ) {
-
-      const product =
-        products.find(
-          product =>
-            product.id ===
-            productId
-        );
-
-
-      if (!product) return;
-
-
-      const existing =
-        cart.find(
-          item =>
-            item.id ===
-            productId
-        );
-
-
-      if (existing) {
-
-        existing.quantity++;
-
-      } else {
-
-        cart.push({
-          ...product,
-          quantity: 1
-        });
-
-      }
-
-
-      updateCart();
-
-    }
-
-
-
-    /* ==========================================================
-       CANTIDAD
-       ========================================================== */
-
-    function changeQuantity(
-      productId,
-      amount
-    ) {
-
-      const item =
-        cart.find(
-          product =>
-            product.id ===
-            productId
-        );
-
-
-      if (!item) return;
-
-
-      item.quantity +=
-        amount;
-
-
-      if (
-        item.quantity <=
-        0
-      ) {
-
-        cart =
-          cart.filter(
-            product =>
-              product.id !==
-              productId
-          );
-
-      }
-
-
-      updateCart();
-
-    }
-
-
-
-    /* ==========================================================
-       ELIMINAR
-       ========================================================== */
-
-    function removeFromCart(
-      productId
-    ) {
-
-      cart =
-        cart.filter(
-          product =>
-            product.id !==
-            productId
-        );
-
-
-      updateCart();
-
-    }
-
-
-
-    /* ==========================================================
-       CALCULAR
-       ========================================================== */
-
-    function calculateCart() {
-
-      const subtotal =
-        cart.reduce(
-          (total, item) =>
-            total +
-            item.price *
-            item.quantity,
-          0
-        );
-
-
-      const tax =
-        subtotal *
-        IVA;
-
-
-      const total =
-        subtotal +
-        tax;
-
-
-      return {
-        subtotal,
-        tax,
-        total
-      };
-
-    }
-
-
-
-    /* ==========================================================
-       ACTUALIZAR CARRITO
-       ========================================================== */
-
-    function updateCart() {
-
-      const container =
-        document.getElementById(
-          "cartItems"
-        );
-
-
-      const quantity =
-        cart.reduce(
-          (total, item) =>
-            total +
-            item.quantity,
-          0
-        );
-
-
-      document.getElementById(
-        "cartCount"
-      ).textContent =
-        quantity;
-
-
-      document.getElementById(
-        "cartCountMobile"
-      ).textContent =
-        quantity;
-
-
-      if (
-        cart.length ===
-        0
-      ) {
-
-        container.innerHTML = `
-
-          <div class="text-center py-16">
-
-            <div class="text-5xl mb-4">
-              🛒
-            </div>
-
-            <p class="text-slate-500">
-              Tu carrito está vacío.
-            </p>
-
-          </div>
-
-        `;
-
-      } else {
-
-        container.innerHTML =
-          cart
-            .map(
-              item => `
-
-                <div class="border rounded-xl p-3">
-
-                  <div class="flex gap-3">
-
-                    <img
-                      src="${item.image}"
-                      class="w-20 h-20 object-cover rounded-lg"
-                      alt="${item.name}"
-                    >
-
-
-                    <div class="flex-1">
-
-                      <h4 class="font-semibold text-sm">
-                        ${item.name}
-                      </h4>
-
-
-                      <p class="text-blue-600 font-bold">
-                        ${formatCurrency(item.price)}
-                      </p>
-
-
-                      <div class="flex items-center gap-3 mt-2">
+                    <h3 class="font-bold text-lg mt-2">
+                        ${producto.nombre}
+                    </h3>
+
+                    <p class="text-gray-500 text-sm mt-2 min-h-[45px]">
+                        ${producto.descripcion}
+                    </p>
+
+                    <div class="flex items-center justify-between mt-5">
+
+                        <div>
+                            <p class="text-xs text-gray-400">
+                                Precio
+                            </p>
+
+                            <p class="text-2xl font-bold text-blue-700">
+                                $${producto.precio.toFixed(2)}
+                            </p>
+                        </div>
 
                         <button
-                          onclick="changeQuantity(${item.id}, -1)"
-                          class="w-7 h-7 rounded bg-slate-200 hover:bg-slate-300"
+                            onclick="agregarCarrito(${producto.id})"
+                            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-xl font-semibold"
                         >
-                          -
+                            🛒 Agregar
                         </button>
-
-
-                        <span class="font-semibold">
-                          ${item.quantity}
-                        </span>
-
-
-                        <button
-                          onclick="changeQuantity(${item.id}, 1)"
-                          class="w-7 h-7 rounded bg-slate-200 hover:bg-slate-300"
-                        >
-                          +
-                        </button>
-
-
-                        <button
-                          onclick="removeFromCart(${item.id})"
-                          class="ml-auto text-red-500 text-sm hover:text-red-700"
-                        >
-                          Eliminar
-                        </button>
-
-                      </div>
 
                     </div>
 
-                  </div>
+                </div>
+
+            </div>
+
+        `).join("");
+
+    }
+
+
+    /* =====================================================
+       BUSCADOR
+    ===================================================== */
+
+    document
+        .getElementById("searchInput")
+        .addEventListener("input", renderProductos);
+
+
+    /* =====================================================
+       FILTROS
+    ===================================================== */
+
+    function filtrarCategoria(categoria) {
+
+        categoriaActual = categoria;
+
+        renderProductos();
+
+    }
+
+
+    /* =====================================================
+       AGREGAR AL CARRITO
+    ===================================================== */
+
+    function agregarCarrito(id) {
+
+        const producto = productos.find(p => p.id === id);
+
+        const existente = carrito.find(p => p.id === id);
+
+        if (existente) {
+
+            existente.cantidad++;
+
+        } else {
+
+            carrito.push({
+                ...producto,
+                cantidad: 1
+            });
+
+        }
+
+        actualizarCarrito();
+
+        mostrarMensaje("Producto agregado al carrito");
+
+    }
+
+
+    /* =====================================================
+       ELIMINAR PRODUCTO
+    ===================================================== */
+
+    function eliminarCarrito(id) {
+
+        carrito = carrito.filter(p => p.id !== id);
+
+        actualizarCarrito();
+
+    }
+
+
+    /* =====================================================
+       CAMBIAR CANTIDAD
+    ===================================================== */
+
+    function cambiarCantidad(id, cambio) {
+
+        const producto = carrito.find(p => p.id === id);
+
+        if (!producto) return;
+
+        producto.cantidad += cambio;
+
+        if (producto.cantidad <= 0) {
+
+            eliminarCarrito(id);
+
+            return;
+
+        }
+
+        actualizarCarrito();
+
+    }
+
+
+    /* =====================================================
+       ACTUALIZAR CARRITO
+    ===================================================== */
+
+    function actualizarCarrito() {
+
+        const count = carrito.reduce(
+            (total, producto) => total + producto.cantidad,
+            0
+        );
+
+        document.getElementById("cartCount").textContent = count;
+
+
+        const container = document.getElementById("cartItems");
+
+        if (carrito.length === 0) {
+
+            container.innerHTML = `
+                <div class="text-center py-10">
+
+                    <div class="text-6xl mb-4">
+                        🛒
+                    </div>
+
+                    <h3 class="text-xl font-bold">
+                        Tu carrito está vacío
+                    </h3>
+
+                    <p class="text-gray-500 mt-2">
+                        Agrega productos para comenzar tu compra.
+                    </p>
+
+                </div>
+            `;
+
+        } else {
+
+            container.innerHTML = carrito.map(producto => `
+
+                <div class="flex gap-4 items-center border-b py-4">
+
+                    <img
+                        src="${producto.imagen}"
+                        class="w-20 h-20 object-contain bg-gray-50 rounded-lg"
+                        onerror="this.onerror=null; this.src='https://placehold.co/100x100?text=Producto';"
+                    >
+
+                    <div class="flex-1">
+
+                        <h4 class="font-bold">
+                            ${producto.nombre}
+                        </h4>
+
+                        <p class="text-blue-600 font-semibold">
+                            $${producto.precio.toFixed(2)}
+                        </p>
+
+                        <div class="flex items-center gap-3 mt-2">
+
+                            <button
+                                onclick="cambiarCantidad(${producto.id}, -1)"
+                                class="bg-gray-200 w-7 h-7 rounded"
+                            >
+                                −
+                            </button>
+
+                            <span>
+                                ${producto.cantidad}
+                            </span>
+
+                            <button
+                                onclick="cambiarCantidad(${producto.id}, 1)"
+                                class="bg-gray-200 w-7 h-7 rounded"
+                            >
+                                +
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                    <button
+                        onclick="eliminarCarrito(${producto.id})"
+                        class="text-red-500 hover:text-red-700"
+                    >
+                        🗑️
+                    </button>
 
                 </div>
 
-              `
-            )
-            .join("");
-
-      }
-
-
-      const totals =
-        calculateCart();
-
-
-      document.getElementById(
-        "cartSubtotal"
-      ).textContent =
-        formatCurrency(
-          totals.subtotal
-        );
-
-
-      document.getElementById(
-        "cartTax"
-      ).textContent =
-        formatCurrency(
-          totals.tax
-        );
-
-
-      document.getElementById(
-        "cartTotal"
-      ).textContent =
-        formatCurrency(
-          totals.total
-        );
-
-
-      document.getElementById(
-        "checkoutButton"
-      ).disabled =
-        cart.length === 0;
-
-    }
-
-
-
-    /* ==========================================================
-       CARRITO MODAL
-       ========================================================== */
-
-    function toggleCart() {
-
-      document
-        .getElementById(
-          "cartOverlay"
-        )
-        .classList.toggle(
-          "hidden"
-        );
-
-    }
-
-
-    function closeCartFromOverlay(
-      event
-    ) {
-
-      if (
-        event.target.id ===
-        "cartOverlay"
-      ) {
-
-        toggleCart();
-
-      }
-
-    }
-
-
-
-    /* ==========================================================
-       CHECKOUT
-       ========================================================== */
-
-    function openCheckout() {
-
-      if (
-        cart.length ===
-        0
-      ) return;
-
-
-      const totals =
-        calculateCart();
-
-
-      document.getElementById(
-        "checkoutSubtotal"
-      ).textContent =
-        formatCurrency(
-          totals.subtotal
-        );
-
-
-      document.getElementById(
-        "checkoutTax"
-      ).textContent =
-        formatCurrency(
-          totals.tax
-        );
-
-
-      document.getElementById(
-        "checkoutTotal"
-      ).textContent =
-        formatCurrency(
-          totals.total
-        );
-
-
-      document
-        .getElementById(
-          "checkoutModal"
-        )
-        .classList.remove(
-          "hidden"
-        );
-
-
-      document
-        .getElementById(
-          "checkoutModal"
-        )
-        .classList.add(
-          "flex"
-        );
-
-
-      document
-        .getElementById(
-          "cartOverlay"
-        )
-        .classList.add(
-          "hidden"
-        );
-
-    }
-
-
-    function closeCheckout() {
-
-      document
-        .getElementById(
-          "checkoutModal"
-        )
-        .classList.add(
-          "hidden"
-        );
-
-
-      document
-        .getElementById(
-          "checkoutModal"
-        )
-        .classList.remove(
-          "flex"
-        );
-
-    }
-
-
-
-    /* ==========================================================
-       VALIDAR TARJETA
-       ========================================================== */
-
-    function validateCardNumber(
-      number
-    ) {
-
-      const digits =
-        number.replace(
-          /\D/g,
-          ""
-        );
-
-
-      if (
-        digits.length <
-          13 ||
-        digits.length >
-          19
-      ) {
-
-        return false;
-
-      }
-
-
-      let sum = 0;
-
-      let shouldDouble =
-        false;
-
-
-      for (
-        let i =
-          digits.length - 1;
-        i >= 0;
-        i--
-      ) {
-
-        let digit =
-          parseInt(
-            digits[i]
-          );
-
-
-        if (
-          shouldDouble
-        ) {
-
-          digit *= 2;
-
-
-          if (
-            digit > 9
-          ) {
-
-            digit -= 9;
-
-          }
+            `).join("");
 
         }
 
 
-        sum += digit;
-
-        shouldDouble =
-          !shouldDouble;
-
-      }
-
-
-      return (
-        sum % 10 ===
-        0
-      );
+        calcularTotales();
 
     }
 
 
+    /* =====================================================
+       TOTALES
+    ===================================================== */
 
-    /* ==========================================================
-       FECHA TARJETA
-       ========================================================== */
+    function calcularTotales() {
 
-    function validateExpiry(
-      expiry
-    ) {
+        const subtotal = carrito.reduce(
+            (total, producto) =>
+                total + producto.precio * producto.cantidad,
+            0
+        );
 
-      if (
-        !/^\d{2}\/\d{2}$/.test(
-          expiry
-        )
-      ) {
+        const iva = subtotal * 0.15;
 
-        return false;
+        const total = subtotal + iva;
 
-      }
+        document.getElementById("subtotal").textContent =
+            `$${subtotal.toFixed(2)}`;
 
+        document.getElementById("iva").textContent =
+            `$${iva.toFixed(2)}`;
 
-      const [
-        month,
-        year
-      ] =
-        expiry
-          .split("/")
-          .map(
-            Number
-          );
-
-
-      if (
-        month < 1 ||
-        month > 12
-      ) {
-
-        return false;
-
-      }
-
-
-      const now =
-        new Date();
-
-
-      const currentYear =
-        now.getFullYear() %
-        100;
-
-
-      const currentMonth =
-        now.getMonth() +
-        1;
-
-
-      if (
-        year <
-        currentYear
-      ) {
-
-        return false;
-
-      }
-
-
-      if (
-        year ===
-          currentYear &&
-        month <
-          currentMonth
-      ) {
-
-        return false;
-
-      }
-
-
-      return true;
+        document.getElementById("total").textContent =
+            `$${total.toFixed(2)}`;
 
     }
 
 
+    /* =====================================================
+       MODAL CARRITO
+    ===================================================== */
 
-    /* ==========================================================
-       FORMATO TARJETA
-       ========================================================== */
+    function abrirCarrito() {
 
-    document
-      .getElementById(
-        "cardNumber"
-      )
-      .addEventListener(
-        "input",
-        function () {
+        document
+            .getElementById("cartModal")
+            .classList.remove("hidden");
 
-          let value =
-            this.value
-              .replace(
-                /\D/g,
-                ""
-              )
-              .substring(
-                0,
-                19
-              );
+    }
 
 
-          value =
-            value
-              .replace(
-                /(.{4})/g,
-                "$1 "
-              )
-              .trim();
+    function cerrarCarrito() {
+
+        document
+            .getElementById("cartModal")
+            .classList.add("hidden");
+
+    }
 
 
-          this.value =
-            value;
+    /* =====================================================
+       MODAL PAGO
+    ===================================================== */
+
+    function abrirPago() {
+
+        if (carrito.length === 0) {
+
+            alert("Tu carrito está vacío.");
+
+            return;
 
         }
-      );
 
+        cerrarCarrito();
 
-
-    /* ==========================================================
-       FORMATO FECHA
-       ========================================================== */
-
-    document
-      .getElementById(
-        "cardExpiry"
-      )
-      .addEventListener(
-        "input",
-        function () {
-
-          let value =
-            this.value
-              .replace(
-                /\D/g,
-                ""
-              )
-              .substring(
-                0,
-                4
-              );
-
-
-          if (
-            value.length >=
-            3
-          ) {
-
-            value =
-              value.substring(
-                0,
-                2
-              ) +
-              "/" +
-              value.substring(
-                2
-              );
-
-          }
-
-
-          this.value =
-            value;
-
-        }
-      );
-
-
-
-    /* ==========================================================
-       MENSAJE
-       ========================================================== */
-
-    function showPaymentMessage(
-      message,
-      type = "error"
-    ) {
-
-      const element =
-        document.getElementById(
-          "paymentMessage"
-        );
-
-
-      element.textContent =
-        message;
-
-
-      element.classList.remove(
-        "hidden",
-        "bg-red-100",
-        "text-red-700",
-        "bg-green-100",
-        "text-green-700"
-      );
-
-
-      if (
-        type ===
-        "success"
-      ) {
-
-        element.classList.add(
-          "bg-green-100",
-          "text-green-700"
-        );
-
-      } else {
-
-        element.classList.add(
-          "bg-red-100",
-          "text-red-700"
-        );
-
-      }
+        document
+            .getElementById("paymentModal")
+            .classList.remove("hidden");
 
     }
 
 
+    function cerrarPago() {
 
-    /* ==========================================================
+        document
+            .getElementById("paymentModal")
+            .classList.add("hidden");
+
+    }
+
+
+    /* =====================================================
+       VALIDACIÓN DE TARJETA
+    ===================================================== */
+
+    function validarTarjeta(numero) {
+
+        const limpio = numero.replace(/\s/g, "");
+
+        return /^\d{16}$/.test(limpio);
+
+    }
+
+
+    function validarFecha(fecha) {
+
+        return /^(0[1-9]|1[0-2])\/\d{2}$/.test(fecha);
+
+    }
+
+
+    function validarCVC(cvc) {
+
+        return /^\d{3,4}$/.test(cvc);
+
+    }
+
+
+    /* =====================================================
        PROCESAR PAGO
-       ========================================================== */
+    ===================================================== */
 
     document
-      .getElementById(
-        "paymentForm"
-      )
-      .addEventListener(
-        "submit",
-        async function (
-          event
-        ) {
+        .getElementById("paymentForm")
+        .addEventListener("submit", async function(event) {
 
-          event.preventDefault();
+            event.preventDefault();
 
 
-          const customerName =
-            document
-              .getElementById(
-                "customerName"
-              )
-              .value
-              .trim();
+            const nombreTitular =
+                document.getElementById("cardName").value.trim();
 
+            const numeroTarjeta =
+                document.getElementById("cardNumber").value.trim();
 
-          const customerEmail =
-            document
-              .getElementById(
-                "customerEmail"
-              )
-              .value
-              .trim();
+            const fecha =
+                document.getElementById("cardDate").value.trim();
 
+            const cvc =
+                document.getElementById("cardCvc").value.trim();
 
-          const customerPhone =
-            document
-              .getElementById(
-                "customerPhone"
-              )
-              .value
-              .trim();
+            const cliente =
+                document.getElementById("customerName").value.trim();
 
+            const email =
+                document.getElementById("customerEmail").value.trim();
 
-          const cardName =
-            document
-              .getElementById(
-                "cardName"
-              )
-              .value
-              .trim();
 
+            if (nombreTitular.length < 3) {
 
-          const cardNumber =
-            document
-              .getElementById(
-                "cardNumber"
-              )
-              .value
-              .trim();
+                alert("Ingresa correctamente el nombre del titular.");
 
-
-          const cardExpiry =
-            document
-              .getElementById(
-                "cardExpiry"
-              )
-              .value
-              .trim();
-
-
-          const cardCvc =
-            document
-              .getElementById(
-                "cardCvc"
-              )
-              .value
-              .trim();
-
-
-
-          /* VALIDACIÓN CLIENTE */
-
-          if (
-            !customerName ||
-            !customerEmail ||
-            !customerPhone
-          ) {
-
-            showPaymentMessage(
-              "Completa todos los datos del cliente."
-            );
-
-            return;
-
-          }
-
-
-
-          /* VALIDACIÓN TITULAR */
-
-          if (
-            !cardName
-          ) {
-
-            showPaymentMessage(
-              "Ingresa el nombre del titular de la tarjeta."
-            );
-
-            return;
-
-          }
-
-
-
-          /* VALIDACIÓN NÚMERO */
-
-          if (
-            !validateCardNumber(
-              cardNumber
-            )
-          ) {
-
-            showPaymentMessage(
-              "El número de tarjeta no es válido."
-            );
-
-            return;
-
-          }
-
-
-
-          /* VALIDACIÓN FECHA */
-
-          if (
-            !validateExpiry(
-              cardExpiry
-            )
-          ) {
-
-            showPaymentMessage(
-              "La fecha de vencimiento no es válida."
-            );
-
-            return;
-
-          }
-
-
-
-          /* VALIDACIÓN CVC */
-
-          if (
-            !/^\d{3,4}$/.test(
-              cardCvc
-            )
-          ) {
-
-            showPaymentMessage(
-              "El CVC debe contener 3 o 4 dígitos."
-            );
-
-            return;
-
-          }
-
-
-
-          const payButton =
-            document.getElementById(
-              "payButton"
-            );
-
-
-          payButton.disabled =
-            true;
-
-
-          payButton.textContent =
-            "Procesando...";
-
-
-          try {
-
-            const totals =
-              calculateCart();
-
-
-
-            /* ==================================================
-               MODO DEMOSTRACIÓN
-               ================================================== */
-
-            if (
-              !supabaseClient
-            ) {
-
-              await new Promise(
-                resolve =>
-                  setTimeout(
-                    resolve,
-                    1200
-                  )
-              );
-
-
-              showPaymentMessage(
-                "Compra realizada correctamente. Configura Supabase para registrar la venta.",
-                "success"
-              );
-
-
-              finishPurchase();
-
-              return;
+                return;
 
             }
 
 
+            if (!validarTarjeta(numeroTarjeta)) {
 
-            /* ==================================================
-               CLIENTE
-               ================================================== */
+                alert("El número de tarjeta debe contener 16 dígitos.");
 
-            const {
-              data:
-                clientData,
-              error:
-                clientError
-            } =
-              await supabaseClient
-                .from(
-                  "clientes"
-                )
-                .insert({
-
-                  nombre:
-                    customerName,
-
-                  email:
-                    customerEmail,
-
-                  telefono:
-                    customerPhone
-
-                })
-                .select()
-                .single();
-
-
-            if (
-              clientError
-            ) {
-
-              throw clientError;
+                return;
 
             }
 
 
+            if (!validarFecha(fecha)) {
 
-            /* ==================================================
-               VENTA
-               ================================================== */
+                alert("La fecha debe tener el formato MM/AA.");
 
-            const {
-              data:
-                saleData,
-              error:
-                saleError
-            } =
-              await supabaseClient
-                .from(
-                  "ventas"
-                )
-                .insert({
-
-                  cliente_id:
-                    clientData.id,
-
-                  subtotal:
-                    totals.subtotal,
-
-                  iva:
-                    totals.tax,
-
-                  total:
-                    totals.total,
-
-                  estado:
-                    "PAGADA",
-
-                  fecha:
-                    new Date()
-                      .toISOString()
-
-                })
-                .select()
-                .single();
-
-
-            if (
-              saleError
-            ) {
-
-              throw saleError;
+                return;
 
             }
 
 
+            if (!validarCVC(cvc)) {
 
-            /* ==================================================
-               DETALLE VENTA
-               ================================================== */
+                alert("El CVC debe tener 3 o 4 dígitos.");
 
-            const details =
-              cart.map(
-                item => ({
-
-                  venta_id:
-                    saleData.id,
-
-                  producto_id:
-                    item.id,
-
-                  cantidad:
-                    item.quantity,
-
-                  precio_unitario:
-                    item.price,
-
-                  subtotal:
-                    item.price *
-                    item.quantity
-
-                })
-              );
-
-
-            const {
-              error:
-                detailError
-            } =
-              await supabaseClient
-                .from(
-                  "detalle_ventas"
-                )
-                .insert(
-                  details
-                );
-
-
-            if (
-              detailError
-            ) {
-
-              throw detailError;
+                return;
 
             }
 
 
+            if (cliente.length < 3) {
 
-            /* ==================================================
-               ÉXITO
-               ================================================== */
+                alert("Ingresa el nombre del cliente.");
 
-            showPaymentMessage(
-              `Compra registrada correctamente. Número de venta: ${saleData.id}`,
-              "success"
+                return;
+
+            }
+
+
+            if (!email.includes("@")) {
+
+                alert("Ingresa un correo electrónico válido.");
+
+                return;
+
+            }
+
+
+            const subtotal = carrito.reduce(
+                (total, producto) =>
+                    total + producto.precio * producto.cantidad,
+                0
+            );
+
+            const iva = subtotal * 0.15;
+
+            const total = subtotal + iva;
+
+
+            /* ============================================
+               SUPABASE
+            ============================================ */
+
+            if (supabaseClient) {
+
+                try {
+
+                    /*
+                     * Primero se registra el cliente.
+                     */
+
+                    const { data: clienteData, error: clienteError } =
+                        await supabaseClient
+                            .from("clientes")
+                            .insert([{
+                                nombre: cliente,
+                                email: email
+                            }])
+                            .select()
+                            .single();
+
+
+                    if (clienteError) {
+
+                        console.error(clienteError);
+
+                        throw new Error(
+                            "No se pudo registrar el cliente."
+                        );
+
+                    }
+
+
+                    /*
+                     * Se registra la venta.
+                     */
+
+                    const { data: ventaData, error: ventaError } =
+                        await supabaseClient
+                            .from("ventas")
+                            .insert([{
+                                cliente_id: clienteData.id,
+                                total: total,
+                                fecha: new Date().toISOString()
+                            }])
+                            .select()
+                            .single();
+
+
+                    if (ventaError) {
+
+                        console.error(ventaError);
+
+                        throw new Error(
+                            "No se pudo registrar la venta."
+                        );
+
+                    }
+
+
+                    /*
+                     * Se registran los productos vendidos.
+                     */
+
+                    const detalles = carrito.map(producto => ({
+
+                        venta_id: ventaData.id,
+
+                        producto_id: producto.id,
+
+                        cantidad: producto.cantidad,
+
+                        precio_unitario: producto.precio,
+
+                        subtotal:
+                            producto.precio *
+                            producto.cantidad
+
+                    }));
+
+
+                    const { error: detalleError } =
+                        await supabaseClient
+                            .from("detalle_ventas")
+                            .insert(detalles);
+
+
+                    if (detalleError) {
+
+                        console.error(detalleError);
+
+                        throw new Error(
+                            "No se pudieron registrar los detalles."
+                        );
+
+                    }
+
+                }
+
+                catch (error) {
+
+                    console.error(error);
+
+                    alert(
+                        "La compra no pudo registrarse en Supabase."
+                    );
+
+                    return;
+
+                }
+
+            }
+
+
+            /* ============================================
+               COMPRA EXITOSA
+            ============================================ */
+
+            alert(
+                `¡Compra realizada correctamente!\n\n` +
+                `Cliente: ${cliente}\n` +
+                `Total: $${total.toFixed(2)}`
             );
 
 
-            finishPurchase();
+            carrito = [];
+
+            actualizarCarrito();
+
+            cerrarPago();
+
+            document
+                .getElementById("paymentForm")
+                .reset();
+
+        });
 
 
-          } catch (
-            error
-          ) {
+    /* =====================================================
+       MENSAJE
+    ===================================================== */
 
-            console.error(
-              "Error Supabase:",
-              error
-            );
+    function mostrarMensaje(texto) {
 
+        const mensaje = document.createElement("div");
 
-            showPaymentMessage(
-              "No se pudo registrar la venta. Revisa Supabase, las tablas y las políticas RLS."
-            );
+        mensaje.className =
+            "fixed bottom-5 right-5 bg-green-600 text-white px-6 py-3 rounded-xl shadow-lg z-[100]";
 
-          } finally {
+        mensaje.textContent = "✓ " + texto;
 
-            payButton.disabled =
-              false;
+        document.body.appendChild(mensaje);
 
+        setTimeout(() => {
 
-            payButton.textContent =
-              "Confirmar y pagar";
+            mensaje.remove();
 
-          }
-
-        }
-      );
-
-
-
-    /* ==========================================================
-       FINALIZAR COMPRA
-       ========================================================== */
-
-    function finishPurchase() {
-
-      setTimeout(
-        () => {
-
-          cart = [];
-
-          updateCart();
-
-
-          document
-            .getElementById(
-              "paymentForm"
-            )
-            .reset();
-
-
-          closeCheckout();
-
-        },
-        2200
-      );
+        }, 2500);
 
     }
 
 
+    /* =====================================================
+       INICIO
+    ===================================================== */
 
-    /* ==========================================================
-       INICIALIZAR
-       ========================================================== */
+    renderProductos();
 
-    renderProducts();
+    actualizarCarrito();
 
-    updateCart();
+</script>
 
 
-  </script>
+<!-- =========================================================
+     DOCUMENTACIÓN TÉCNICA DEL PROYECTO
+=========================================================
 
+TODOHOGAR
+Arquitectura de Datos
+HTML + JavaScript + Supabase + Pentaho + MySQL + Power BI
 
 
-  <!-- ==========================================================
-       DOCUMENTACIÓN TÉCNICA DEL PROYECTO TODOHOGAR
-       ==========================================================
+==============================================================
+1. ESTRUCTURA DE BASE DE DATOS EN SUPABASE
+==============================================================
 
-       ==========================================================
-       1. ARQUITECTURA GENERAL
-       ==========================================================
+Ejecutar el siguiente SQL en:
 
-       USUARIO
-          |
-          v
-       TODOHOGAR
-          |
-          v
-       JAVASCRIPT
-          |
-          v
-       SUPABASE / POSTGRESQL
-          |
-          v
-       PENTAHO DATA INTEGRATION
-          |
-          v
-       MYSQL
-          |
-          v
-       POWER BI
-          |
-          v
-       DASHBOARD
+Supabase
+→ SQL Editor
+→ New Query
 
 
-       ==========================================================
-       2. TABLA PRODUCTOS
-       ==========================================================
+--------------------------------------------------------------
+TABLA PRODUCTOS
+--------------------------------------------------------------
 
-       CREATE TABLE productos (
+CREATE TABLE productos (
 
-           id BIGSERIAL PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
 
-           nombre VARCHAR(150) NOT NULL,
+    nombre VARCHAR(200) NOT NULL,
 
-           categoria VARCHAR(100) NOT NULL,
+    categoria VARCHAR(100) NOT NULL,
 
-           descripcion TEXT,
+    descripcion TEXT,
 
-           precio NUMERIC(10,2) NOT NULL,
+    precio DECIMAL(10,2) NOT NULL,
 
-           imagen TEXT,
+    imagen TEXT,
 
-           stock INTEGER DEFAULT 0,
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 
-           fecha_creacion
-           TIMESTAMP WITH TIME ZONE
-           DEFAULT NOW()
+);
 
-       );
 
+--------------------------------------------------------------
+TABLA CLIENTES
+--------------------------------------------------------------
 
-       ==========================================================
-       3. TABLA CLIENTES
-       ==========================================================
+CREATE TABLE clientes (
 
-       CREATE TABLE clientes (
+    id BIGSERIAL PRIMARY KEY,
 
-           id BIGSERIAL PRIMARY KEY,
+    nombre VARCHAR(150) NOT NULL,
 
-           nombre VARCHAR(150) NOT NULL,
+    email VARCHAR(200) NOT NULL,
 
-           email VARCHAR(150)
-           UNIQUE NOT NULL,
+    fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 
-           telefono VARCHAR(30),
+);
 
-           fecha_registro
-           TIMESTAMP WITH TIME ZONE
-           DEFAULT NOW()
 
-       );
+--------------------------------------------------------------
+TABLA VENTAS
+--------------------------------------------------------------
 
+CREATE TABLE ventas (
 
-       ==========================================================
-       4. TABLA VENTAS
-       ==========================================================
+    id BIGSERIAL PRIMARY KEY,
 
-       CREATE TABLE ventas (
+    cliente_id BIGINT REFERENCES clientes(id),
 
-           id BIGSERIAL PRIMARY KEY,
+    total DECIMAL(10,2) NOT NULL,
 
-           cliente_id BIGINT NOT NULL,
+    fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 
-           subtotal NUMERIC(10,2) NOT NULL,
+);
 
-           iva NUMERIC(10,2) NOT NULL,
 
-           total NUMERIC(10,2) NOT NULL,
+--------------------------------------------------------------
+TABLA DETALLE_VENTAS
+--------------------------------------------------------------
 
-           estado VARCHAR(30)
-           DEFAULT 'PENDIENTE',
+CREATE TABLE detalle_ventas (
 
-           fecha
-           TIMESTAMP WITH TIME ZONE
-           DEFAULT NOW(),
+    id BIGSERIAL PRIMARY KEY,
 
-           CONSTRAINT fk_venta_cliente
+    venta_id BIGINT REFERENCES ventas(id)
+        ON DELETE CASCADE,
 
-           FOREIGN KEY (cliente_id)
+    producto_id BIGINT REFERENCES productos(id),
 
-           REFERENCES clientes(id)
+    cantidad INTEGER NOT NULL,
 
-       );
+    precio_unitario DECIMAL(10,2) NOT NULL,
 
+    subtotal DECIMAL(10,2) NOT NULL
 
-       ==========================================================
-       5. TABLA DETALLE_VENTAS
-       ==========================================================
+);
 
-       CREATE TABLE detalle_ventas (
 
-           id BIGSERIAL PRIMARY KEY,
+==============================================================
+2. RELACIONES
+==============================================================
 
-           venta_id BIGINT NOT NULL,
+clientes
+    |
+    | 1:N
+    ↓
+ventas
+    |
+    | 1:N
+    ↓
+detalle_ventas
+    |
+    | N:1
+    ↓
+productos
 
-           producto_id BIGINT NOT NULL,
 
-           cantidad INTEGER NOT NULL,
+La relación permite conocer:
 
-           precio_unitario
-           NUMERIC(10,2) NOT NULL,
+Cliente
+→ Venta
+→ Productos comprados
+→ Cantidad
+→ Precio
+→ Subtotal
 
-           subtotal
-           NUMERIC(10,2) NOT NULL,
 
-           CONSTRAINT fk_detalle_venta
+==============================================================
+3. CONFIGURAR SUPABASE
+==============================================================
 
-           FOREIGN KEY (venta_id)
+Entrar a Supabase.
 
-           REFERENCES ventas(id),
+Crear un proyecto.
 
-           CONSTRAINT fk_detalle_producto
+Ir a:
 
-           FOREIGN KEY (producto_id)
+Project Settings
+→ API
 
-           REFERENCES productos(id)
+Copiar:
 
-       );
+Project URL
 
+y
 
-       ==========================================================
-       6. RELACIONES
-       ==========================================================
+anon public key
 
-       CLIENTES
 
-           1
-           |
-           |
-           N
-           |
-           v
+Después reemplazar en JavaScript:
 
-       VENTAS
+const SUPABASE_URL = "TU_SUPABASE_URL";
 
-           1
-           |
-           |
-           N
-           |
-           v
+const SUPABASE_KEY = "TU_SUPABASE_ANON_KEY";
 
-       DETALLE_VENTAS
 
-           N
-           |
-           |
-           1
-           |
-           v
+IMPORTANTE:
 
-       PRODUCTOS
+Para un proyecto académico se puede utilizar la anon key
+con las políticas RLS configuradas correctamente.
 
+Nunca colocar una SERVICE_ROLE KEY en el frontend.
 
-       ==========================================================
-       7. CONFIGURACIÓN SUPABASE
-       ==========================================================
 
-       Supabase:
+==============================================================
+4. INSERTAR PRODUCTOS
+==============================================================
 
-       Project Settings
-       →
-       API
+Ejemplo:
 
+INSERT INTO productos
+(nombre, categoria, descripcion, precio, imagen)
+VALUES
 
-       Copiar:
+(
+    'Refrigeradora French Door RI-992I NE',
+    'Refrigeración',
+    'Refrigeradora moderna French Door',
+    1915.00,
+    'URL_IMAGEN'
+),
 
-       Project URL
+(
+    'Lavadora',
+    'Lavado',
+    'Lavadora para el hogar',
+    435.00,
+    'URL_IMAGEN'
+);
 
-       y:
 
-       anon public key
+==============================================================
+5. GITHUB
+==============================================================
 
+Crear un repositorio nuevo llamado:
 
-       Colocar:
+TodoHogar
 
-       const SUPABASE_URL =
-         "https://TU-PROYECTO.supabase.co";
 
+Crear:
 
-       const SUPABASE_KEY =
-         "TU_ANON_PUBLIC_KEY";
+index.html
 
 
-       IMPORTANTE:
+Guardar el código anterior dentro del archivo.
 
-       No colocar nunca la:
 
-       service_role key
+Desde Git:
 
-       en el código frontend.
+git init
 
+git add .
 
-       ==========================================================
-       8. ROW LEVEL SECURITY
-       ==========================================================
+git commit -m "Proyecto TodoHogar"
 
-       ALTER TABLE clientes
-       ENABLE ROW LEVEL SECURITY;
+git branch -M main
 
+git remote add origin URL_DEL_REPOSITORIO
 
-       ALTER TABLE ventas
-       ENABLE ROW LEVEL SECURITY;
+git push -u origin main
 
 
-       ALTER TABLE detalle_ventas
-       ENABLE ROW LEVEL SECURITY;
+==============================================================
+6. GITHUB PAGES
+==============================================================
 
+Entrar al repositorio.
 
-       Crear posteriormente las políticas RLS
-       correspondientes según el nivel de seguridad
-       requerido para el proyecto.
+Ir a:
 
+Settings
+→ Pages
 
-       ==========================================================
-       9. GITHUB
-       ==========================================================
+Seleccionar:
 
-       Crear repositorio:
+Deploy from branch
 
-       TodoHogar
+Branch:
 
+main
 
-       Crear archivo:
+Folder:
 
-       index.html
+/root
 
 
-       Terminal:
+Guardar.
 
-       git init
+GitHub generará una URL para la página.
 
-       git add .
 
-       git commit -m "Proyecto TodoHogar"
+==============================================================
+7. VERCEL
+==============================================================
 
-       git branch -M main
+También se puede desplegar mediante Vercel.
 
-       git remote add origin
-       https://github.com/USUARIO/TodoHogar.git
+Crear una cuenta.
 
-       git push -u origin main
+Importar el repositorio de GitHub.
 
+Seleccionar el proyecto TodoHogar.
 
-       ==========================================================
-       10. GITHUB PAGES
-       ==========================================================
+Presionar Deploy.
 
-       GitHub:
 
-       Settings
-       →
-       Pages
+==============================================================
+8. CONEXIÓN SUPABASE → PENTAHO
+==============================================================
 
+Pentaho Data Integration (PDI)
+también conocido como Spoon.
 
-       Build and deployment:
+Crear una transformación.
 
-       Deploy from branch
+Agregar:
 
+Table Input
 
-       Branch:
 
-       main
+Configurar una conexión PostgreSQL.
 
 
-       Folder:
+Driver:
 
-       /root
+PostgreSQL JDBC
 
 
-       Save.
+Host:
 
+Host proporcionado por Supabase
 
-       ==========================================================
-       11. VERCEL
-       ==========================================================
 
-       Crear proyecto en Vercel.
+Port:
 
-       Importar repositorio:
+5432
 
-       TodoHogar
 
+Database:
 
-       Seleccionar:
+Nombre de la base de datos
 
-       Framework:
-       Other / Static
 
+Username:
 
-       Deploy.
+Usuario de PostgreSQL
 
 
-       ==========================================================
-       12. PENTAHO
-       ==========================================================
+Password:
 
-       Instalar Pentaho Data Integration.
+Contraseña de Supabase
 
-       Instalar driver JDBC PostgreSQL.
 
-       Ejemplo:
+Después probar:
 
-       postgresql-42.x.x.jar
+Test Connection
 
 
-       Colocar el archivo en la carpeta de drivers
-       de Pentaho.
+==============================================================
+9. EXTRACCIÓN DE DATOS
+==============================================================
 
-       Reiniciar Spoon.
+En Table Input utilizar consultas como:
 
+SELECT *
+FROM productos;
 
-       ==========================================================
-       13. CONEXIÓN SUPABASE - PENTAHO
-       ==========================================================
 
-       Pentaho:
+También:
 
-       View
-       →
-       Database connections
-       →
-       New
+SELECT *
+FROM clientes;
 
 
-       Seleccionar:
+SELECT *
+FROM ventas;
 
-       PostgreSQL
 
+SELECT *
+FROM detalle_ventas;
 
-       Configurar:
 
-       Connection Name:
-       Supabase
+Esto permite extraer los datos desde Supabase.
 
 
-       Host:
-       HOST_SUPABASE
+==============================================================
+10. TRANSFORMACIÓN ETL
+==============================================================
 
+Flujo recomendado:
 
-       Port:
-       5432
+Table Input
+     ↓
+Select Values
+     ↓
+Calculator
+     ↓
+Filter Rows
+     ↓
+Table Output
 
 
-       Database:
-       postgres
+Table Input:
 
+Extrae los datos de Supabase.
 
-       User:
-       USUARIO
 
+Select Values:
 
-       Password:
-       CONTRASEÑA
+Selecciona las columnas necesarias.
 
 
-       Los datos exactos se obtienen desde:
+Calculator:
 
-       Supabase
-       →
-       Project Settings
-       →
-       Database
+Puede calcular nuevos valores.
 
 
-       ==========================================================
-       14. TABLE INPUT
-       ==========================================================
+Filter Rows:
 
-       Crear transformación.
+Permite filtrar información.
 
-       Agregar:
 
-       Table Input
+Table Output:
 
+Carga la información en MySQL.
 
-       Seleccionar conexión:
 
-       Supabase
+==============================================================
+11. CONEXIÓN PENTAHO → MYSQL
+==============================================================
 
+En Pentaho crear una nueva conexión:
 
-       SQL:
+Database Connection
 
-       SELECT
-           id,
-           nombre,
-           categoria,
-           precio,
-           stock
-       FROM productos;
 
+Tipo:
 
-       Ejecutar Preview.
+MySQL
 
 
-       ==========================================================
-       15. ETL
-       ==========================================================
+Configurar:
 
-       EXTRACT:
+Host
+Port
+Database
+Username
+Password
 
-       Supabase PostgreSQL
 
+Ejemplo:
 
-       TRANSFORM:
+Host: localhost
 
-       Pentaho
+Port: 3306
 
+Database: todohogar
 
-       LOAD:
+Username: root
 
-       MySQL
+Password: ********
 
 
-       Flujo:
+Probar:
 
-       Table Input
-            |
-            v
-       Select Values
-            |
-            v
-       Filter Rows
-            |
-            v
-       Table Output
+Test Connection
 
 
-       ==========================================================
-       16. MYSQL
-       ==========================================================
+==============================================================
+12. TABLAS EN MYSQL
+==============================================================
 
-       CREATE DATABASE todohogar;
+Crear las mismas tablas:
 
-       USE todohogar;
+productos
 
+clientes
 
-       CREATE TABLE productos (
+ventas
 
-           id BIGINT PRIMARY KEY,
+detalle_ventas
 
-           nombre VARCHAR(150),
 
-           categoria VARCHAR(100),
+Mantener las relaciones mediante claves primarias
+y claves foráneas.
 
-           precio DECIMAL(10,2),
 
-           stock INT
+==============================================================
+13. CARGA ETL
+==============================================================
 
-       );
+En Pentaho:
 
+Table Input
+        ↓
+Transformaciones
+        ↓
+Table Output
 
-       ==========================================================
-       17. POWER BI
-       ==========================================================
 
-       Abrir Power BI Desktop.
+Table Output debe apuntar a las tablas de MySQL.
 
-       Seleccionar:
 
-       Obtener datos
+Ejemplo:
 
-       MySQL database
+productos → MySQL.productos
 
+clientes → MySQL.clientes
 
-       Servidor:
+ventas → MySQL.ventas
 
-       localhost
+detalle_ventas → MySQL.detalle_ventas
 
 
-       Base de datos:
+==============================================================
+14. MYSQL → POWER BI
+==============================================================
 
-       todohogar
+Abrir:
 
+Power BI Desktop
 
-       Introducir usuario y contraseña.
 
+Seleccionar:
 
-       Seleccionar las tablas.
+Obtener datos
 
+→ Base de datos MySQL
 
-       ==========================================================
-       18. MODELO RELACIONAL
-       ==========================================================
 
-       clientes.id
-             |
-             | 1:N
-             v
-       ventas.cliente_id
+Ingresar:
 
+Servidor:
 
-       ventas.id
-             |
-             | 1:N
-             v
-       detalle_ventas.venta_id
+localhost
 
 
-       productos.id
-             |
-             | 1:N
-             v
-       detalle_ventas.producto_id
+Base de datos:
 
+todohogar
 
-       ==========================================================
-       19. MEDIDAS DAX
-       ==========================================================
 
-       Ventas Totales =
-       SUM(ventas[total])
+Ingresar usuario y contraseña.
 
 
-       IVA Total =
-       SUM(ventas[iva])
+Seleccionar las tablas:
 
+productos
 
-       Número de Ventas =
-       COUNTROWS(ventas)
+clientes
 
+ventas
 
-       Ticket Promedio =
-       DIVIDE(
-           [Ventas Totales],
-           [Número de Ventas]
-       )
+detalle_ventas
 
 
-       ==========================================================
-       20. DASHBOARD
-       ==========================================================
+Presionar:
 
-       Incluir:
+Cargar
 
-       • Ventas totales.
 
-       • Número de ventas.
+==============================================================
+15. MODELO RELACIONAL EN POWER BI
+==============================================================
 
-       • Ticket promedio.
+Configurar:
 
-       • Ventas por categoría.
+clientes.id
+        ↓
+ventas.cliente_id
 
-       • Ventas por producto.
 
-       • Ventas por fecha.
+ventas.id
+        ↓
+detalle_ventas.venta_id
 
-       • Productos más vendidos.
 
-       • Clientes con mayor volumen de compras.
+productos.id
+        ↓
+detalle_ventas.producto_id
 
-       • Filtro por fecha.
 
-       • Filtro por categoría.
+Esto permite analizar:
 
+Ventas por cliente
 
-       ==========================================================
-       21. FLUJO PARA EXPLICAR EN EL EXAMEN
-       ==========================================================
+Ventas por producto
 
-       1. El usuario entra a TodoHogar.
+Productos más vendidos
 
-       2. Busca un producto.
+Ingresos
 
-       3. Filtra por categoría.
+Cantidad vendida
 
-       4. Agrega productos al carrito.
+Categorías
 
-       5. El sistema calcula subtotal.
+Total de ventas
 
-       6. El sistema calcula IVA.
 
-       7. El sistema calcula total.
+==============================================================
+16. DASHBOARD RECOMENDADO
+==============================================================
 
-       8. El cliente introduce sus datos.
+Crear tarjetas para:
 
-       9. JavaScript valida el formulario.
+Total de ventas
 
-       10. Supabase registra el cliente.
+Cantidad de productos vendidos
 
-       11. Supabase registra la venta.
+Número de clientes
 
-       12. Supabase registra el detalle.
+Ticket promedio
 
-       13. Pentaho obtiene los datos mediante JDBC.
 
-       14. Pentaho transforma los datos.
+Crear gráficos:
 
-       15. Pentaho carga los datos en MySQL.
+Ventas por categoría
 
-       16. Power BI obtiene los datos.
+Ventas por producto
 
-       17. Se construye el modelo relacional.
+Ventas por fecha
 
-       18. Se crean medidas DAX.
+Productos más vendidos
 
-       19. Se construye el dashboard.
 
+También se pueden agregar:
 
-       ==========================================================
-       FIN DEL PROYECTO TODOHOGAR
-       ==========================================================
+Filtros por fecha
 
-  -->
+Filtros por categoría
+
+Filtros por producto
+
+
+==============================================================
+17. FLUJO COMPLETO DEL PROYECTO
+==============================================================
+
+
+                  TODOHOGAR
+                      |
+                      ↓
+                  HTML + JS
+                      |
+                      ↓
+                   SUPABASE
+                      |
+                      ↓
+             Base de datos PostgreSQL
+                      |
+                      ↓
+              PENTAHO DATA INTEGRATION
+                      |
+                      ↓
+                    ETL
+                      |
+                      ↓
+                    MYSQL
+                      |
+                      ↓
+                  POWER BI
+                      |
+                      ↓
+                 DASHBOARD
+
+
+==============================================================
+FIN DE LA DOCUMENTACIÓN
+==============================================================
+
+-->
 
 </body>
 </html>
