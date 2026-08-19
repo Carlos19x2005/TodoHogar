@@ -638,7 +638,7 @@
         // 2. Guarda cada producto del carrito en "order_items"
         const items = details.map(item => ({
           order_id: orderRow.id,
-          product_id: item.id,
+          producto_id: item.id,
           quantity: item.quantity,
           unit_price: item.price
         }));
