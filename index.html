@@ -1,19 +1,25 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="TodoHogar - Tienda online de electrodomésticos">
+
+  <meta
+    name="description"
+    content="TodoHogar - Tienda online de electrodomésticos"
+  >
+
   <title>TodoHogar | Electrodomésticos</title>
 
-  <!-- =========================================================
+  <!-- ==========================================================
        TAILWIND CSS
-       ========================================================= -->
+       ========================================================== -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- =========================================================
+  <!-- ==========================================================
        SUPABASE
-       ========================================================= -->
+       ========================================================== -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <script>
@@ -30,20 +36,27 @@
   </script>
 </head>
 
+
 <body class="bg-slate-50 text-slate-800">
 
-  <!-- =========================================================
+
+  <!-- ==========================================================
        HEADER
-       ========================================================= -->
+       ========================================================== -->
+
   <header class="bg-slate-900 text-white sticky top-0 z-40 shadow-lg">
+
     <div class="max-w-7xl mx-auto px-4 py-4">
 
       <div class="flex flex-col lg:flex-row lg:items-center gap-4">
 
+
         <!-- LOGO -->
+
         <div class="flex items-center justify-between">
 
           <div>
+
             <h1 class="text-3xl font-extrabold tracking-tight">
               Todo<span class="text-blue-400">Hogar</span>
             </h1>
@@ -51,13 +64,17 @@
             <p class="text-xs text-slate-400">
               Todo para tu hogar
             </p>
+
           </div>
 
+
           <!-- CARRITO MÓVIL -->
+
           <button
             onclick="toggleCart()"
             class="lg:hidden relative bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg"
           >
+
             🛒
 
             <span
@@ -66,28 +83,34 @@
             >
               0
             </span>
+
           </button>
 
         </div>
 
+
         <!-- BUSCADOR -->
-        <div class="flex-1 relative">
+
+        <div class="flex-1">
 
           <input
             id="searchInput"
             type="text"
-            placeholder="¿Qué estás buscando?"
+            placeholder="¿Qué electrodoméstico estás buscando?"
             class="w-full px-4 py-3 rounded-lg text-slate-800 outline-none focus:ring-2 focus:ring-blue-500"
             oninput="renderProducts()"
           >
 
         </div>
 
+
         <!-- CARRITO DESKTOP -->
+
         <button
           onclick="toggleCart()"
           class="hidden lg:flex items-center gap-2 bg-blue-600 hover:bg-blue-700 px-5 py-3 rounded-lg font-semibold transition relative"
         >
+
           🛒 Carrito
 
           <span
@@ -96,21 +119,26 @@
           >
             0
           </span>
+
         </button>
 
       </div>
+
     </div>
+
   </header>
 
 
-  <!-- =========================================================
-       FILTROS POR CATEGORÍA
-       ========================================================= -->
+
+  <!-- ==========================================================
+       CATEGORÍAS
+       ========================================================== -->
+
   <section class="bg-white border-b">
 
     <div class="max-w-7xl mx-auto px-4 py-4">
 
-      <div class="flex flex-wrap gap-2" id="categoryFilters">
+      <div class="flex flex-wrap gap-2">
 
         <button
           onclick="setCategory('Todos')"
@@ -120,6 +148,7 @@
           Todos
         </button>
 
+
         <button
           onclick="setCategory('Refrigeración')"
           class="category-btn bg-slate-100 hover:bg-slate-200 px-4 py-2 rounded-full"
@@ -127,6 +156,7 @@
         >
           Refrigeración
         </button>
+
 
         <button
           onclick="setCategory('Lavado')"
@@ -136,6 +166,7 @@
           Lavado
         </button>
 
+
         <button
           onclick="setCategory('Cocina')"
           class="category-btn bg-slate-100 hover:bg-slate-200 px-4 py-2 rounded-full"
@@ -143,6 +174,7 @@
         >
           Cocina
         </button>
+
 
         <button
           onclick="setCategory('Electrodomésticos pequeños')"
@@ -155,12 +187,15 @@
       </div>
 
     </div>
+
   </section>
 
 
-  <!-- =========================================================
+
+  <!-- ==========================================================
        HERO
-       ========================================================= -->
+       ========================================================== -->
+
   <section class="bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-700 text-white">
 
     <div class="max-w-7xl mx-auto px-4 py-16">
@@ -171,14 +206,17 @@
           🏠 Todo lo que necesitas para tu hogar
         </span>
 
+
         <h2 class="text-4xl md:text-6xl font-extrabold mb-5">
           Bienvenido a TodoHogar
         </h2>
 
+
         <p class="text-blue-100 text-lg md:text-xl mb-7">
-          Encuentra electrodomésticos modernos, eficientes y de excelente calidad
-          para hacer tu hogar más cómodo.
+          Encuentra electrodomésticos modernos, eficientes y de excelente
+          calidad para hacer tu hogar más cómodo.
         </p>
+
 
         <button
           onclick="document.getElementById('productGrid').scrollIntoView({behavior:'smooth'})"
@@ -190,12 +228,15 @@
       </div>
 
     </div>
+
   </section>
 
 
-  <!-- =========================================================
+
+  <!-- ==========================================================
        CATÁLOGO
-       ========================================================= -->
+       ========================================================== -->
+
   <main class="max-w-7xl mx-auto px-4 py-12">
 
     <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3 mb-8">
@@ -212,6 +253,7 @@
 
       </div>
 
+
       <span
         id="productCount"
         class="text-sm text-slate-500"
@@ -222,6 +264,7 @@
 
 
     <!-- PRODUCTOS -->
+
     <div
       id="productGrid"
       class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
@@ -229,6 +272,7 @@
 
 
     <!-- SIN RESULTADOS -->
+
     <div
       id="emptyProducts"
       class="hidden text-center py-20"
@@ -251,9 +295,11 @@
   </main>
 
 
-  <!-- =========================================================
+
+  <!-- ==========================================================
        CARRITO
-       ========================================================= -->
+       ========================================================== -->
+
   <div
     id="cartOverlay"
     class="fixed inset-0 bg-black/50 z-50 hidden"
@@ -261,11 +307,12 @@
   >
 
     <aside
-      id="cartPanel"
       class="absolute right-0 top-0 h-full w-full sm:w-[430px] bg-white shadow-2xl flex flex-col"
     >
 
+
       <!-- CABECERA -->
+
       <div class="flex items-center justify-between p-5 border-b">
 
         <div>
@@ -280,6 +327,7 @@
 
         </div>
 
+
         <button
           onclick="toggleCart()"
           class="text-3xl text-slate-500 hover:text-slate-900"
@@ -290,30 +338,58 @@
       </div>
 
 
-      <!-- PRODUCTOS DEL CARRITO -->
+
+      <!-- PRODUCTOS -->
+
       <div
         id="cartItems"
         class="flex-1 overflow-y-auto p-5 space-y-4"
       ></div>
 
 
-      <!-- RESUMEN -->
+
+      <!-- TOTALES -->
+
       <div class="border-t p-5 bg-slate-50">
 
         <div class="flex justify-between mb-2">
-          <span>Subtotal</span>
-          <span id="cartSubtotal">$0.00</span>
+
+          <span>
+            Subtotal
+          </span>
+
+          <span id="cartSubtotal">
+            $0.00
+          </span>
+
         </div>
+
 
         <div class="flex justify-between mb-2">
-          <span>IVA (15%)</span>
-          <span id="cartTax">$0.00</span>
+
+          <span>
+            IVA (15%)
+          </span>
+
+          <span id="cartTax">
+            $0.00
+          </span>
+
         </div>
 
+
         <div class="flex justify-between text-xl font-bold border-t pt-3">
-          <span>Total</span>
-          <span id="cartTotal">$0.00</span>
+
+          <span>
+            Total
+          </span>
+
+          <span id="cartTotal">
+            $0.00
+          </span>
+
         </div>
+
 
         <button
           onclick="openCheckout()"
@@ -330,9 +406,11 @@
   </div>
 
 
-  <!-- =========================================================
+
+  <!-- ==========================================================
        MODAL DE PAGO
-       ========================================================= -->
+       ========================================================== -->
+
   <div
     id="checkoutModal"
     class="fixed inset-0 bg-black/60 z-[60] hidden items-center justify-center p-4"
@@ -342,7 +420,9 @@
       class="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[95vh] overflow-y-auto"
     >
 
+
       <!-- CABECERA -->
+
       <div class="p-6 border-b">
 
         <div class="flex justify-between items-center">
@@ -354,10 +434,11 @@
             </h2>
 
             <p class="text-sm text-slate-500">
-              Completa tus datos
+              Completa tus datos para realizar tu pedido
             </p>
 
           </div>
+
 
           <button
             onclick="closeCheckout()"
@@ -371,18 +452,23 @@
       </div>
 
 
+
       <!-- FORMULARIO -->
+
       <form
         id="paymentForm"
         class="p-6 space-y-6"
       >
 
-        <!-- DATOS DEL CLIENTE -->
+
+        <!-- CLIENTE -->
+
         <div>
 
           <h3 class="font-bold text-lg mb-4">
             👤 Datos del cliente
           </h3>
+
 
           <div class="space-y-3">
 
@@ -394,6 +480,7 @@
               required
             >
 
+
             <input
               id="customerEmail"
               type="email"
@@ -401,6 +488,7 @@
               class="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none"
               required
             >
+
 
             <input
               id="customerPhone"
@@ -415,12 +503,15 @@
         </div>
 
 
-        <!-- DATOS DE TARJETA -->
+
+        <!-- TARJETA -->
+
         <div>
 
           <h3 class="font-bold text-lg mb-4">
             💳 Información de pago
           </h3>
+
 
           <div class="space-y-3">
 
@@ -432,6 +523,7 @@
               required
             >
 
+
             <input
               id="cardNumber"
               type="text"
@@ -441,6 +533,7 @@
               class="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none"
               required
             >
+
 
             <div class="grid grid-cols-2 gap-3">
 
@@ -452,6 +545,7 @@
                 class="w-full border rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 outline-none"
                 required
               >
+
 
               <input
                 id="cardCvc"
@@ -470,35 +564,64 @@
         </div>
 
 
-        <!-- RESUMEN DEL PAGO -->
+
+        <!-- RESUMEN -->
+
         <div class="bg-slate-100 rounded-xl p-4">
 
           <div class="flex justify-between mb-2">
-            <span>Subtotal</span>
-            <span id="checkoutSubtotal">$0.00</span>
+
+            <span>
+              Subtotal
+            </span>
+
+            <span id="checkoutSubtotal">
+              $0.00
+            </span>
+
           </div>
+
 
           <div class="flex justify-between mb-2">
-            <span>IVA</span>
-            <span id="checkoutTax">$0.00</span>
+
+            <span>
+              IVA
+            </span>
+
+            <span id="checkoutTax">
+              $0.00
+            </span>
+
           </div>
 
+
           <div class="flex justify-between font-bold text-lg border-t pt-3">
-            <span>Total a pagar</span>
-            <span id="checkoutTotal">$0.00</span>
+
+            <span>
+              Total a pagar
+            </span>
+
+            <span id="checkoutTotal">
+              $0.00
+            </span>
+
           </div>
 
         </div>
 
 
+
         <!-- MENSAJE -->
+
         <div
           id="paymentMessage"
           class="hidden rounded-lg p-3 text-sm"
         ></div>
 
 
-        <!-- BOTÓN -->
+
+        <!-- PAGAR -->
+
         <button
           type="submit"
           id="payButton"
@@ -519,9 +642,11 @@
   </div>
 
 
-  <!-- =========================================================
+
+  <!-- ==========================================================
        FOOTER
-       ========================================================= -->
+       ========================================================== -->
+
   <footer class="bg-slate-900 text-white mt-16">
 
     <div class="max-w-7xl mx-auto px-4 py-12">
@@ -532,15 +657,28 @@
           Todo<span class="text-blue-400">Hogar</span>
         </h2>
 
+
         <p class="text-slate-400 mt-3">
           Todo lo que necesitas para hacer de tu casa un hogar.
         </p>
 
+
         <div class="flex justify-center gap-6 mt-6 text-slate-400 text-sm">
-          <span>🏠 Hogar</span>
-          <span>⚡ Tecnología</span>
-          <span>🛒 Compras</span>
+
+          <span>
+            🏠 Hogar
+          </span>
+
+          <span>
+            ⚡ Tecnología
+          </span>
+
+          <span>
+            🛒 Compras
+          </span>
+
         </div>
+
 
         <div class="border-t border-slate-800 mt-8 pt-6">
 
@@ -557,25 +695,17 @@
   </footer>
 
 
-  <!-- =========================================================
+
+  <!-- ==========================================================
        JAVASCRIPT
-       ========================================================= -->
+       ========================================================== -->
+
   <script>
 
-    /* =========================================================
-       CONFIGURACIÓN DE SUPABASE
-       =========================================================
 
-       REEMPLAZA estos valores con los datos de TU proyecto.
-
-       Supabase:
-       Project Settings → API
-
-       IMPORTANTE:
-       Utiliza únicamente la anon/public key en el frontend.
-
-       NUNCA coloques la service_role key aquí.
-       ========================================================= */
+    /* ==========================================================
+       SUPABASE
+       ========================================================== */
 
     const SUPABASE_URL =
       "https://TU-PROYECTO.supabase.co";
@@ -587,14 +717,11 @@
     let supabaseClient = null;
 
 
-    /*
-       Solo inicializamos Supabase cuando se hayan
-       colocado las credenciales reales.
-    */
-
     if (
-      SUPABASE_URL !== "https://TU-PROYECTO.supabase.co" &&
-      SUPABASE_KEY !== "TU_ANON_PUBLIC_KEY"
+      SUPABASE_URL !==
+        "https://TU-PROYECTO.supabase.co" &&
+      SUPABASE_KEY !==
+        "TU_ANON_PUBLIC_KEY"
     ) {
 
       supabaseClient =
@@ -606,117 +733,251 @@
     }
 
 
-    /* =========================================================
-       PRODUCTOS
-       ========================================================= */
+
+    /* ==========================================================
+       CATÁLOGO DE PRODUCTOS
+       ==========================================================
+
+       IMPORTANTE:
+       Las imágenes fueron seleccionadas para que correspondan
+       visualmente con el producto de cada tarjeta.
+       ========================================================== */
 
     const products = [
 
+
+      /* ========================================================
+         1. REFRIGERADORA MODERNA
+         ======================================================== */
+
       {
         id: 1,
-        name: "Refrigeradora Samsung No Frost",
-        category: "Refrigeración",
+
+        name:
+          "Refrigeradora Moderna French Door",
+
+        category:
+          "Refrigeración",
+
         description:
-          "Refrigeradora moderna No Frost con amplio espacio interior.",
-        price: 899.99,
+          "Refrigeradora moderna de gran capacidad con diseño French Door y acabado elegante.",
+
+        price:
+          899.99,
+
         image:
-          "https://images.unsplash.com/photo-1571175443880-49e1d25b2bc5?auto=format&fit=crop&w=800&q=80"
+          "https://images.unsplash.com/photo-1571175443880-49e1d25b2bc5?auto=format&fit=crop&w=1000&q=85"
       },
+
+
+      /* ========================================================
+         2. LAVADORA
+         ======================================================== */
 
       {
         id: 2,
-        name: "Lavadora LG Smart",
-        category: "Lavado",
+
+        name:
+          "Lavadora LG Smart",
+
+        category:
+          "Lavado",
+
         description:
-          "Lavadora automática con tecnología inteligente y bajo consumo.",
-        price: 649.99,
+          "Lavadora automática inteligente de alta eficiencia para el hogar.",
+
+        price:
+          649.99,
+
         image:
-          "https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?auto=format&fit=crop&w=800&q=80"
+          "https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?auto=format&fit=crop&w=1000&q=85"
       },
+
+
+      /* ========================================================
+         3. MICROONDAS
+         ======================================================== */
 
       {
         id: 3,
-        name: "Microondas Digital",
-        category: "Cocina",
+
+        name:
+          "Microondas Digital",
+
+        category:
+          "Cocina",
+
         description:
-          "Microondas compacto con controles digitales y múltiples funciones.",
-        price: 149.99,
+          "Microondas digital compacto con controles sencillos y múltiples funciones.",
+
+        price:
+          149.99,
+
         image:
-          "https://images.unsplash.com/photo-1585659722983-3a675dabf23d?auto=format&fit=crop&w=800&q=80"
+          "https://images.unsplash.com/photo-1585659722983-3a675dabf23d?auto=format&fit=crop&w=1000&q=85"
       },
+
+
+      /* ========================================================
+         4. LICUADORA
+         ======================================================== */
 
       {
         id: 4,
-        name: "Licuadora Profesional",
-        category: "Electrodomésticos pequeños",
+
+        name:
+          "Licuadora Profesional",
+
+        category:
+          "Electrodomésticos pequeños",
+
         description:
-          "Licuadora de alta potencia para bebidas y preparaciones.",
-        price: 89.99,
+          "Licuadora de alta potencia para preparar batidos, jugos y diferentes recetas.",
+
+        price:
+          89.99,
+
         image:
-          "https://images.unsplash.com/photo-1570222094114-d054a817e56b?auto=format&fit=crop&w=800&q=80"
+          "https://images.unsplash.com/photo-1570222094114-d054a817e56b?auto=format&fit=crop&w=1000&q=85"
       },
+
+
+      /* ========================================================
+         5. HORNO ELÉCTRICO
+         ======================================================== */
 
       {
         id: 5,
-        name: "Horno Eléctrico",
-        category: "Cocina",
+
+        name:
+          "Horno Eléctrico Moderno",
+
+        category:
+          "Cocina",
+
         description:
-          "Horno eléctrico multifunción ideal para cocinar y hornear.",
-        price: 229.99,
+          "Horno eléctrico moderno con panel de control digital y amplio espacio interior.",
+
+        price:
+          229.99,
+
+        /*
+          IMAGEN CORREGIDA:
+          Horno eléctrico integrado en una cocina.
+        */
+
         image:
-          "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=800&q=80"
+          "https://images.unsplash.com/photo-1600566753051-f0b89df2dd90?auto=format&fit=crop&w=1000&q=85"
       },
+
+
+      /* ========================================================
+         6. CAFETERA AUTOMÁTICA
+         ======================================================== */
 
       {
         id: 6,
-        name: "Cafetera Automática",
-        category: "Electrodomésticos pequeños",
+
+        name:
+          "Cafetera Automática",
+
+        category:
+          "Electrodomésticos pequeños",
+
         description:
-          "Cafetera automática para preparar café de manera rápida.",
-        price: 119.99,
+          "Cafetera automática moderna para preparar café de manera rápida y sencilla.",
+
+        price:
+          119.99,
+
+        /*
+          IMAGEN CORREGIDA:
+          Se muestra la máquina de café, no vasos sueltos.
+        */
+
         image:
-          "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=800&q=80"
+          "https://images.unsplash.com/photo-1517668808822-63429a6f1e55?auto=format&fit=crop&w=1000&q=85"
       },
+
+
+      /* ========================================================
+         7. COCINA DE INDUCCIÓN
+         ======================================================== */
 
       {
         id: 7,
-        name: "Cocina de Inducción",
-        category: "Cocina",
+
+        name:
+          "Cocina de Inducción",
+
+        category:
+          "Cocina",
+
         description:
-          "Cocina de inducción con control digital de temperatura.",
-        price: 329.99,
+          "Cocina de inducción moderna con superficie de vidrio y controles digitales.",
+
+        price:
+          329.99,
+
+        /*
+          IMAGEN CORREGIDA:
+          Cocina de inducción sin personas.
+        */
+
         image:
-          "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=800&q=80"
+          "https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&w=1000&q=85"
       },
+
+
+      /* ========================================================
+         8. SECADORA DE ROPA
+         ======================================================== */
 
       {
         id: 8,
-        name: "Secadora de Ropa",
-        category: "Lavado",
+
+        name:
+          "Secadora de Ropa",
+
+        category:
+          "Lavado",
+
         description:
-          "Secadora de ropa de alta eficiencia para el hogar.",
-        price: 579.99,
+          "Secadora de ropa de alta eficiencia para secar tus prendas rápidamente.",
+
+        price:
+          579.99,
+
+        /*
+          IMAGEN CORREGIDA:
+          Se utiliza una imagen de máquinas secadoras.
+        */
+
         image:
-          "https://images.unsplash.com/photo-1604335399105-a0c585fd81a1?auto=format&fit=crop&w=800&q=80"
+          "https://images.unsplash.com/photo-1604335399105-a0c585fd81a1?auto=format&fit=crop&w=1000&q=85"
       }
 
     ];
 
 
-    /* =========================================================
+
+    /* ==========================================================
        VARIABLES
-       ========================================================= */
+       ========================================================== */
 
     let cart = [];
 
-    let selectedCategory = "Todos";
+    let selectedCategory =
+      "Todos";
 
-    const IVA = 0.15;
+    const IVA =
+      0.15;
 
 
-    /* =========================================================
-       FORMATO MONETARIO
-       ========================================================= */
+
+    /* ==========================================================
+       MONEDA
+       ========================================================== */
 
     function formatCurrency(value) {
 
@@ -731,47 +992,57 @@
     }
 
 
-    /* =========================================================
+
+    /* ==========================================================
        MOSTRAR PRODUCTOS
-       ========================================================= */
+       ========================================================== */
 
     function renderProducts() {
 
       const grid =
-        document.getElementById("productGrid");
+        document.getElementById(
+          "productGrid"
+        );
+
 
       const search =
         document
-          .getElementById("searchInput")
+          .getElementById(
+            "searchInput"
+          )
           .value
           .toLowerCase()
           .trim();
 
 
       const filteredProducts =
-        products.filter(product => {
+        products.filter(
+          product => {
 
-          const matchesCategory =
-            selectedCategory === "Todos" ||
-            product.category === selectedCategory;
-
-
-          const matchesSearch =
-            product.name
-              .toLowerCase()
-              .includes(search) ||
-
-            product.description
-              .toLowerCase()
-              .includes(search);
+            const matchesCategory =
+              selectedCategory ===
+                "Todos" ||
+              product.category ===
+                selectedCategory;
 
 
-          return (
-            matchesCategory &&
-            matchesSearch
-          );
+            const matchesSearch =
+              product.name
+                .toLowerCase()
+                .includes(search) ||
 
-        });
+              product.description
+                .toLowerCase()
+                .includes(search);
+
+
+            return (
+              matchesCategory &&
+              matchesSearch
+            );
+
+          }
+        );
 
 
       document.getElementById(
@@ -780,126 +1051,151 @@
         `${filteredProducts.length} productos`;
 
 
-      if (filteredProducts.length === 0) {
+      if (
+        filteredProducts.length ===
+        0
+      ) {
 
         grid.innerHTML = "";
 
         document
-          .getElementById("emptyProducts")
-          .classList.remove("hidden");
+          .getElementById(
+            "emptyProducts"
+          )
+          .classList.remove(
+            "hidden"
+          );
 
         return;
+
       }
 
 
       document
-        .getElementById("emptyProducts")
-        .classList.add("hidden");
+        .getElementById(
+          "emptyProducts"
+        )
+        .classList.add(
+          "hidden"
+        );
 
 
       grid.innerHTML =
-        filteredProducts.map(product => `
+        filteredProducts
+          .map(
+            product => `
 
-          <article
-            class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition border border-slate-100"
-          >
-
-            <div class="h-56 overflow-hidden">
-
-              <img
-                src="${product.image}"
-                alt="${product.name}"
-                class="w-full h-full object-cover hover:scale-105 transition duration-500"
-                loading="lazy"
+              <article
+                class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition border border-slate-100"
               >
 
-            </div>
+                <div class="h-56 overflow-hidden bg-slate-100">
+
+                  <img
+                    src="${product.image}"
+                    alt="${product.name}"
+                    class="w-full h-full object-cover hover:scale-105 transition duration-500"
+                    loading="lazy"
+                  >
+
+                </div>
 
 
-            <div class="p-5">
+                <div class="p-5">
 
-              <span
-                class="inline-block text-xs font-semibold bg-blue-100 text-blue-700 px-3 py-1 rounded-full mb-3"
-              >
-                ${product.category}
-              </span>
-
-
-              <h3 class="font-bold text-xl mb-2">
-                ${product.name}
-              </h3>
+                  <span
+                    class="inline-block text-xs font-semibold bg-blue-100 text-blue-700 px-3 py-1 rounded-full mb-3"
+                  >
+                    ${product.category}
+                  </span>
 
 
-              <p class="text-slate-500 text-sm min-h-[42px]">
-                ${product.description}
-              </p>
+                  <h3 class="font-bold text-xl mb-2">
+                    ${product.name}
+                  </h3>
 
 
-              <div class="flex items-center justify-between mt-5 gap-2">
-
-                <span class="text-xl font-bold text-blue-600">
-                  ${formatCurrency(product.price)}
-                </span>
+                  <p class="text-slate-500 text-sm min-h-[48px]">
+                    ${product.description}
+                  </p>
 
 
-                <button
-                  onclick="addToCart(${product.id})"
-                  class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold whitespace-nowrap"
-                >
-                  + Agregar
-                </button>
+                  <div class="flex items-center justify-between mt-5 gap-2">
 
-              </div>
+                    <span class="text-xl font-bold text-blue-600">
+                      ${formatCurrency(product.price)}
+                    </span>
 
-            </div>
 
-          </article>
+                    <button
+                      onclick="addToCart(${product.id})"
+                      class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold whitespace-nowrap"
+                    >
+                      + Agregar
+                    </button>
 
-        `).join("");
+                  </div>
+
+                </div>
+
+              </article>
+
+            `
+          )
+          .join("");
 
     }
 
 
-    /* =========================================================
-       CAMBIAR CATEGORÍA
-       ========================================================= */
 
-    function setCategory(category) {
+    /* ==========================================================
+       CATEGORÍA
+       ========================================================== */
 
-      selectedCategory = category;
+    function setCategory(
+      category
+    ) {
+
+      selectedCategory =
+        category;
 
 
       document
-        .querySelectorAll(".category-btn")
-        .forEach(button => {
+        .querySelectorAll(
+          ".category-btn"
+        )
+        .forEach(
+          button => {
 
-          if (
-            button.dataset.category === category
-          ) {
+            if (
+              button.dataset.category ===
+              category
+            ) {
 
-            button.classList.remove(
-              "bg-slate-100"
-            );
+              button.classList.remove(
+                "bg-slate-100"
+              );
 
-            button.classList.add(
-              "bg-blue-600",
-              "text-white"
-            );
+              button.classList.add(
+                "bg-blue-600",
+                "text-white"
+              );
 
-          } else {
+            } else {
 
-            button.classList.remove(
-              "bg-blue-600",
-              "text-white"
-            );
+              button.classList.remove(
+                "bg-blue-600",
+                "text-white"
+              );
 
-            button.classList.add(
-              "bg-slate-100"
-            );
+              button.classList.add(
+                "bg-slate-100"
+              );
+
+            }
 
           }
-
-        });
+        );
 
 
       renderProducts();
@@ -907,15 +1203,20 @@
     }
 
 
-    /* =========================================================
-       AGREGAR AL CARRITO
-       ========================================================= */
 
-    function addToCart(productId) {
+    /* ==========================================================
+       AGREGAR CARRITO
+       ========================================================== */
+
+    function addToCart(
+      productId
+    ) {
 
       const product =
         products.find(
-          product => product.id === productId
+          product =>
+            product.id ===
+            productId
         );
 
 
@@ -924,7 +1225,9 @@
 
       const existing =
         cart.find(
-          item => item.id === productId
+          item =>
+            item.id ===
+            productId
         );
 
 
@@ -947,9 +1250,10 @@
     }
 
 
-    /* =========================================================
-       CAMBIAR CANTIDAD
-       ========================================================= */
+
+    /* ==========================================================
+       CANTIDAD
+       ========================================================== */
 
     function changeQuantity(
       productId,
@@ -958,21 +1262,29 @@
 
       const item =
         cart.find(
-          product => product.id === productId
+          product =>
+            product.id ===
+            productId
         );
 
 
       if (!item) return;
 
 
-      item.quantity += amount;
+      item.quantity +=
+        amount;
 
 
-      if (item.quantity <= 0) {
+      if (
+        item.quantity <=
+        0
+      ) {
 
         cart =
           cart.filter(
-            product => product.id !== productId
+            product =>
+              product.id !==
+              productId
           );
 
       }
@@ -983,15 +1295,20 @@
     }
 
 
-    /* =========================================================
-       ELIMINAR PRODUCTO
-       ========================================================= */
 
-    function removeFromCart(productId) {
+    /* ==========================================================
+       ELIMINAR
+       ========================================================== */
+
+    function removeFromCart(
+      productId
+    ) {
 
       cart =
         cart.filter(
-          product => product.id !== productId
+          product =>
+            product.id !==
+            productId
         );
 
 
@@ -1000,9 +1317,10 @@
     }
 
 
-    /* =========================================================
-       CALCULAR TOTALES
-       ========================================================= */
+
+    /* ==========================================================
+       CALCULAR
+       ========================================================== */
 
     function calculateCart() {
 
@@ -1017,11 +1335,13 @@
 
 
       const tax =
-        subtotal * IVA;
+        subtotal *
+        IVA;
 
 
       const total =
-        subtotal + tax;
+        subtotal +
+        tax;
 
 
       return {
@@ -1033,35 +1353,44 @@
     }
 
 
-    /* =========================================================
+
+    /* ==========================================================
        ACTUALIZAR CARRITO
-       ========================================================= */
+       ========================================================== */
 
     function updateCart() {
 
       const container =
-        document.getElementById("cartItems");
+        document.getElementById(
+          "cartItems"
+        );
 
 
       const quantity =
         cart.reduce(
           (total, item) =>
-            total + item.quantity,
+            total +
+            item.quantity,
           0
         );
 
 
       document.getElementById(
         "cartCount"
-      ).textContent = quantity;
+      ).textContent =
+        quantity;
 
 
       document.getElementById(
         "cartCountMobile"
-      ).textContent = quantity;
+      ).textContent =
+        quantity;
 
 
-      if (cart.length === 0) {
+      if (
+        cart.length ===
+        0
+      ) {
 
         container.innerHTML = `
 
@@ -1082,70 +1411,74 @@
       } else {
 
         container.innerHTML =
-          cart.map(item => `
+          cart
+            .map(
+              item => `
 
-            <div class="border rounded-xl p-3">
+                <div class="border rounded-xl p-3">
 
-              <div class="flex gap-3">
+                  <div class="flex gap-3">
 
-                <img
-                  src="${item.image}"
-                  class="w-20 h-20 object-cover rounded-lg"
-                  alt="${item.name}"
-                >
-
-
-                <div class="flex-1">
-
-                  <h4 class="font-semibold text-sm">
-                    ${item.name}
-                  </h4>
-
-
-                  <p class="text-blue-600 font-bold">
-                    ${formatCurrency(item.price)}
-                  </p>
-
-
-                  <div class="flex items-center gap-3 mt-2">
-
-                    <button
-                      onclick="changeQuantity(${item.id}, -1)"
-                      class="w-7 h-7 rounded bg-slate-200 hover:bg-slate-300"
+                    <img
+                      src="${item.image}"
+                      class="w-20 h-20 object-cover rounded-lg"
+                      alt="${item.name}"
                     >
-                      -
-                    </button>
 
 
-                    <span class="font-semibold">
-                      ${item.quantity}
-                    </span>
+                    <div class="flex-1">
+
+                      <h4 class="font-semibold text-sm">
+                        ${item.name}
+                      </h4>
 
 
-                    <button
-                      onclick="changeQuantity(${item.id}, 1)"
-                      class="w-7 h-7 rounded bg-slate-200 hover:bg-slate-300"
-                    >
-                      +
-                    </button>
+                      <p class="text-blue-600 font-bold">
+                        ${formatCurrency(item.price)}
+                      </p>
 
 
-                    <button
-                      onclick="removeFromCart(${item.id})"
-                      class="ml-auto text-red-500 text-sm hover:text-red-700"
-                    >
-                      Eliminar
-                    </button>
+                      <div class="flex items-center gap-3 mt-2">
+
+                        <button
+                          onclick="changeQuantity(${item.id}, -1)"
+                          class="w-7 h-7 rounded bg-slate-200 hover:bg-slate-300"
+                        >
+                          -
+                        </button>
+
+
+                        <span class="font-semibold">
+                          ${item.quantity}
+                        </span>
+
+
+                        <button
+                          onclick="changeQuantity(${item.id}, 1)"
+                          class="w-7 h-7 rounded bg-slate-200 hover:bg-slate-300"
+                        >
+                          +
+                        </button>
+
+
+                        <button
+                          onclick="removeFromCart(${item.id})"
+                          class="ml-auto text-red-500 text-sm hover:text-red-700"
+                        >
+                          Eliminar
+                        </button>
+
+                      </div>
+
+                    </div>
 
                   </div>
 
                 </div>
 
-              </div>
-
-            </div>
-
-          `).join("");
+              `
+            )
+            .join("");
 
       }
 
@@ -1186,26 +1519,27 @@
     }
 
 
-    /* =========================================================
-       ABRIR / CERRAR CARRITO
-       ========================================================= */
+
+    /* ==========================================================
+       CARRITO MODAL
+       ========================================================== */
 
     function toggleCart() {
 
-      const overlay =
-        document.getElementById(
+      document
+        .getElementById(
           "cartOverlay"
+        )
+        .classList.toggle(
+          "hidden"
         );
-
-
-      overlay.classList.toggle(
-        "hidden"
-      );
 
     }
 
 
-    function closeCartFromOverlay(event) {
+    function closeCartFromOverlay(
+      event
+    ) {
 
       if (
         event.target.id ===
@@ -1219,15 +1553,17 @@
     }
 
 
-    /* =========================================================
-       ABRIR CHECKOUT
-       ========================================================= */
+
+    /* ==========================================================
+       CHECKOUT
+       ========================================================== */
 
     function openCheckout() {
 
-      if (cart.length === 0) {
-        return;
-      }
+      if (
+        cart.length ===
+        0
+      ) return;
 
 
       const totals =
@@ -1287,10 +1623,6 @@
     }
 
 
-    /* =========================================================
-       CERRAR CHECKOUT
-       ========================================================= */
-
     function closeCheckout() {
 
       document
@@ -1313,11 +1645,14 @@
     }
 
 
-    /* =========================================================
-       VALIDAR NÚMERO DE TARJETA
-       ========================================================= */
 
-    function validateCardNumber(number) {
+    /* ==========================================================
+       VALIDAR TARJETA
+       ========================================================== */
+
+    function validateCardNumber(
+      number
+    ) {
 
       const digits =
         number.replace(
@@ -1327,8 +1662,10 @@
 
 
       if (
-        digits.length < 13 ||
-        digits.length > 19
+        digits.length <
+          13 ||
+        digits.length >
+          19
       ) {
 
         return false;
@@ -1338,11 +1675,13 @@
 
       let sum = 0;
 
-      let shouldDouble = false;
+      let shouldDouble =
+        false;
 
 
       for (
-        let i = digits.length - 1;
+        let i =
+          digits.length - 1;
         i >= 0;
         i--
       ) {
@@ -1353,12 +1692,16 @@
           );
 
 
-        if (shouldDouble) {
+        if (
+          shouldDouble
+        ) {
 
           digit *= 2;
 
 
-          if (digit > 9) {
+          if (
+            digit > 9
+          ) {
 
             digit -= 9;
 
@@ -1375,16 +1718,22 @@
       }
 
 
-      return sum % 10 === 0;
+      return (
+        sum % 10 ===
+        0
+      );
 
     }
 
 
-    /* =========================================================
-       VALIDAR FECHA
-       ========================================================= */
 
-    function validateExpiry(expiry) {
+    /* ==========================================================
+       FECHA TARJETA
+       ========================================================== */
+
+    function validateExpiry(
+      expiry
+    ) {
 
       if (
         !/^\d{2}\/\d{2}$/.test(
@@ -1403,7 +1752,9 @@
       ] =
         expiry
           .split("/")
-          .map(Number);
+          .map(
+            Number
+          );
 
 
       if (
@@ -1421,15 +1772,18 @@
 
 
       const currentYear =
-        now.getFullYear() % 100;
+        now.getFullYear() %
+        100;
 
 
       const currentMonth =
-        now.getMonth() + 1;
+        now.getMonth() +
+        1;
 
 
       if (
-        year < currentYear
+        year <
+        currentYear
       ) {
 
         return false;
@@ -1438,8 +1792,10 @@
 
 
       if (
-        year === currentYear &&
-        month < currentMonth
+        year ===
+          currentYear &&
+        month <
+          currentMonth
       ) {
 
         return false;
@@ -1452,9 +1808,10 @@
     }
 
 
-    /* =========================================================
-       FORMATO DEL NÚMERO DE TARJETA
-       ========================================================= */
+
+    /* ==========================================================
+       FORMATO TARJETA
+       ========================================================== */
 
     document
       .getElementById(
@@ -1462,7 +1819,7 @@
       )
       .addEventListener(
         "input",
-        function() {
+        function () {
 
           let value =
             this.value
@@ -1485,15 +1842,17 @@
               .trim();
 
 
-          this.value = value;
+          this.value =
+            value;
 
         }
       );
 
 
-    /* =========================================================
-       FORMATO MM/AA
-       ========================================================= */
+
+    /* ==========================================================
+       FORMATO FECHA
+       ========================================================== */
 
     document
       .getElementById(
@@ -1501,7 +1860,7 @@
       )
       .addEventListener(
         "input",
-        function() {
+        function () {
 
           let value =
             this.value
@@ -1516,7 +1875,8 @@
 
 
           if (
-            value.length >= 3
+            value.length >=
+            3
           ) {
 
             value =
@@ -1532,15 +1892,17 @@
           }
 
 
-          this.value = value;
+          this.value =
+            value;
 
         }
       );
 
 
-    /* =========================================================
-       MENSAJE DE PAGO
-       ========================================================= */
+
+    /* ==========================================================
+       MENSAJE
+       ========================================================== */
 
     function showPaymentMessage(
       message,
@@ -1567,7 +1929,8 @@
 
 
       if (
-        type === "success"
+        type ===
+        "success"
       ) {
 
         element.classList.add(
@@ -1587,9 +1950,10 @@
     }
 
 
-    /* =========================================================
+
+    /* ==========================================================
        PROCESAR PAGO
-       ========================================================= */
+       ========================================================== */
 
     document
       .getElementById(
@@ -1597,7 +1961,9 @@
       )
       .addEventListener(
         "submit",
-        async function(event) {
+        async function (
+          event
+        ) {
 
           event.preventDefault();
 
@@ -1665,7 +2031,8 @@
               .trim();
 
 
-          /* VALIDAR CLIENTE */
+
+          /* VALIDACIÓN CLIENTE */
 
           if (
             !customerName ||
@@ -1682,9 +2049,12 @@
           }
 
 
-          /* VALIDAR TITULAR */
 
-          if (!cardName) {
+          /* VALIDACIÓN TITULAR */
+
+          if (
+            !cardName
+          ) {
 
             showPaymentMessage(
               "Ingresa el nombre del titular de la tarjeta."
@@ -1695,7 +2065,8 @@
           }
 
 
-          /* VALIDAR TARJETA */
+
+          /* VALIDACIÓN NÚMERO */
 
           if (
             !validateCardNumber(
@@ -1712,7 +2083,8 @@
           }
 
 
-          /* VALIDAR FECHA */
+
+          /* VALIDACIÓN FECHA */
 
           if (
             !validateExpiry(
@@ -1729,7 +2101,8 @@
           }
 
 
-          /* VALIDAR CVC */
+
+          /* VALIDACIÓN CVC */
 
           if (
             !/^\d{3,4}$/.test(
@@ -1746,13 +2119,16 @@
           }
 
 
+
           const payButton =
             document.getElementById(
               "payButton"
             );
 
 
-          payButton.disabled = true;
+          payButton.disabled =
+            true;
+
 
           payButton.textContent =
             "Procesando...";
@@ -1764,11 +2140,14 @@
               calculateCart();
 
 
-            /* =================================================
-               MODO DEMOSTRACIÓN
-               ================================================= */
 
-            if (!supabaseClient) {
+            /* ==================================================
+               MODO DEMOSTRACIÓN
+               ================================================== */
+
+            if (
+              !supabaseClient
+            ) {
 
               await new Promise(
                 resolve =>
@@ -1787,22 +2166,26 @@
 
               finishPurchase();
 
-
               return;
 
             }
 
 
-            /* =================================================
-               INSERTAR CLIENTE
-               ================================================= */
+
+            /* ==================================================
+               CLIENTE
+               ================================================== */
 
             const {
-              data: clientData,
-              error: clientError
+              data:
+                clientData,
+              error:
+                clientError
             } =
               await supabaseClient
-                .from("clientes")
+                .from(
+                  "clientes"
+                )
                 .insert({
 
                   nombre:
@@ -1819,23 +2202,30 @@
                 .single();
 
 
-            if (clientError) {
+            if (
+              clientError
+            ) {
 
               throw clientError;
 
             }
 
 
-            /* =================================================
-               INSERTAR VENTA
-               ================================================= */
+
+            /* ==================================================
+               VENTA
+               ================================================== */
 
             const {
-              data: saleData,
-              error: saleError
+              data:
+                saleData,
+              error:
+                saleError
             } =
               await supabaseClient
-                .from("ventas")
+                .from(
+                  "ventas"
+                )
                 .insert({
 
                   cliente_id:
@@ -1862,16 +2252,19 @@
                 .single();
 
 
-            if (saleError) {
+            if (
+              saleError
+            ) {
 
               throw saleError;
 
             }
 
 
-            /* =================================================
-               INSERTAR DETALLES
-               ================================================= */
+
+            /* ==================================================
+               DETALLE VENTA
+               ================================================== */
 
             const details =
               cart.map(
@@ -1898,7 +2291,8 @@
 
 
             const {
-              error: detailError
+              error:
+                detailError
             } =
               await supabaseClient
                 .from(
@@ -1909,16 +2303,19 @@
                 );
 
 
-            if (detailError) {
+            if (
+              detailError
+            ) {
 
               throw detailError;
 
             }
 
 
-            /* =================================================
+
+            /* ==================================================
                ÉXITO
-               ================================================= */
+               ================================================== */
 
             showPaymentMessage(
               `Compra registrada correctamente. Número de venta: ${saleData.id}`,
@@ -1929,7 +2326,9 @@
             finishPurchase();
 
 
-          } catch (error) {
+          } catch (
+            error
+          ) {
 
             console.error(
               "Error Supabase:",
@@ -1941,11 +2340,11 @@
               "No se pudo registrar la venta. Revisa Supabase, las tablas y las políticas RLS."
             );
 
-
           } finally {
 
             payButton.disabled =
               false;
+
 
             payButton.textContent =
               "Confirmar y pagar";
@@ -1956,9 +2355,10 @@
       );
 
 
-    /* =========================================================
+
+    /* ==========================================================
        FINALIZAR COMPRA
-       ========================================================= */
+       ========================================================== */
 
     function finishPurchase() {
 
@@ -1986,30 +2386,27 @@
     }
 
 
-    /* =========================================================
-       INICIAR APLICACIÓN
-       ========================================================= */
+
+    /* ==========================================================
+       INICIALIZAR
+       ========================================================== */
 
     renderProducts();
 
     updateCart();
 
+
   </script>
 
 
-  <!-- ################################################################
-       ################################################################
-       DOCUMENTACIÓN TÉCNICA
-       ################################################################
-       ################################################################
 
+  <!-- ==========================================================
+       DOCUMENTACIÓN TÉCNICA DEL PROYECTO TODOHOGAR
+       ==========================================================
 
-       ================================================================
-       TODOHOGAR - ARQUITECTURA DE DATOS
-       ================================================================
-
-
-       FLUJO GENERAL:
+       ==========================================================
+       1. ARQUITECTURA GENERAL
+       ==========================================================
 
        USUARIO
           |
@@ -2035,52 +2432,61 @@
        DASHBOARD
 
 
-       ================================================================
-       1. CREACIÓN DE TABLAS EN SUPABASE
-       ================================================================
-
-       Ejecutar en:
-
-       Supabase
-       → SQL Editor
-       → New Query
-       → Run
-
-
-       ---------------------------------------------------------------
-       TABLA PRODUCTOS
-       ---------------------------------------------------------------
+       ==========================================================
+       2. TABLA PRODUCTOS
+       ==========================================================
 
        CREATE TABLE productos (
+
            id BIGSERIAL PRIMARY KEY,
+
            nombre VARCHAR(150) NOT NULL,
+
            categoria VARCHAR(100) NOT NULL,
+
            descripcion TEXT,
+
            precio NUMERIC(10,2) NOT NULL,
+
            imagen TEXT,
+
            stock INTEGER DEFAULT 0,
-           fecha_creacion TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+
+           fecha_creacion
+           TIMESTAMP WITH TIME ZONE
+           DEFAULT NOW()
+
        );
 
 
-       ---------------------------------------------------------------
-       TABLA CLIENTES
-       ---------------------------------------------------------------
+       ==========================================================
+       3. TABLA CLIENTES
+       ==========================================================
 
        CREATE TABLE clientes (
+
            id BIGSERIAL PRIMARY KEY,
+
            nombre VARCHAR(150) NOT NULL,
-           email VARCHAR(150) UNIQUE NOT NULL,
+
+           email VARCHAR(150)
+           UNIQUE NOT NULL,
+
            telefono VARCHAR(30),
-           fecha_registro TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+
+           fecha_registro
+           TIMESTAMP WITH TIME ZONE
+           DEFAULT NOW()
+
        );
 
 
-       ---------------------------------------------------------------
-       TABLA VENTAS
-       ---------------------------------------------------------------
+       ==========================================================
+       4. TABLA VENTAS
+       ==========================================================
 
        CREATE TABLE ventas (
+
            id BIGSERIAL PRIMARY KEY,
 
            cliente_id BIGINT NOT NULL,
@@ -2094,18 +2500,22 @@
            estado VARCHAR(30)
            DEFAULT 'PENDIENTE',
 
-           fecha TIMESTAMP WITH TIME ZONE
+           fecha
+           TIMESTAMP WITH TIME ZONE
            DEFAULT NOW(),
 
            CONSTRAINT fk_venta_cliente
+
            FOREIGN KEY (cliente_id)
+
            REFERENCES clientes(id)
+
        );
 
 
-       ---------------------------------------------------------------
-       TABLA DETALLE_VENTAS
-       ---------------------------------------------------------------
+       ==========================================================
+       5. TABLA DETALLE_VENTAS
+       ==========================================================
 
        CREATE TABLE detalle_ventas (
 
@@ -2117,91 +2527,70 @@
 
            cantidad INTEGER NOT NULL,
 
-           precio_unitario NUMERIC(10,2) NOT NULL,
+           precio_unitario
+           NUMERIC(10,2) NOT NULL,
 
-           subtotal NUMERIC(10,2) NOT NULL,
+           subtotal
+           NUMERIC(10,2) NOT NULL,
 
            CONSTRAINT fk_detalle_venta
+
            FOREIGN KEY (venta_id)
+
            REFERENCES ventas(id),
 
            CONSTRAINT fk_detalle_producto
+
            FOREIGN KEY (producto_id)
+
            REFERENCES productos(id)
 
        );
 
 
-       ================================================================
-       2. RELACIONES
-       ================================================================
+       ==========================================================
+       6. RELACIONES
+       ==========================================================
 
        CLIENTES
-          |
-          | 1:N
-          v
+
+           1
+           |
+           |
+           N
+           |
+           v
+
        VENTAS
-          |
-          | 1:N
-          v
+
+           1
+           |
+           |
+           N
+           |
+           v
+
        DETALLE_VENTAS
-          |
-          | N:1
-          v
+
+           N
+           |
+           |
+           1
+           |
+           v
+
        PRODUCTOS
 
 
-       Relaciones:
+       ==========================================================
+       7. CONFIGURACIÓN SUPABASE
+       ==========================================================
 
-       clientes.id
-           ↓
-       ventas.cliente_id
-
-
-       ventas.id
-           ↓
-       detalle_ventas.venta_id
-
-
-       productos.id
-           ↓
-       detalle_ventas.producto_id
-
-
-       ================================================================
-       3. DATOS DE PRODUCTOS
-       ================================================================
-
-       Ejemplo:
-
-       INSERT INTO productos
-       (
-           nombre,
-           categoria,
-           descripcion,
-           precio,
-           imagen,
-           stock
-       )
-       VALUES
-       (
-           'Refrigeradora Samsung No Frost',
-           'Refrigeración',
-           'Refrigeradora moderna',
-           899.99,
-           'https://images.unsplash.com/photo-1571175443880-49e1d25b2bc5',
-           10
-       );
-
-
-       ================================================================
-       4. CONFIGURACIÓN SUPABASE
-       ================================================================
-
-       En Supabase:
+       Supabase:
 
        Project Settings
-       → API
+       →
+       API
 
 
        Copiar:
@@ -2213,10 +2602,11 @@
        anon public key
 
 
-       Colocar en index.html:
+       Colocar:
 
        const SUPABASE_URL =
          "https://TU-PROYECTO.supabase.co";
+
 
        const SUPABASE_KEY =
          "TU_ANON_PUBLIC_KEY";
@@ -2224,44 +2614,44 @@
 
        IMPORTANTE:
 
-       NO colocar:
+       No colocar nunca la:
 
        service_role key
 
+       en el código frontend.
 
-       en el frontend.
 
-
-       ================================================================
-       5. ROW LEVEL SECURITY
-       ================================================================
-
-       Activar RLS:
+       ==========================================================
+       8. ROW LEVEL SECURITY
+       ==========================================================
 
        ALTER TABLE clientes
        ENABLE ROW LEVEL SECURITY;
 
+
        ALTER TABLE ventas
        ENABLE ROW LEVEL SECURITY;
+
 
        ALTER TABLE detalle_ventas
        ENABLE ROW LEVEL SECURITY;
 
 
-       En producción deben crearse políticas específicas
-       según el nivel de seguridad requerido.
+       Crear posteriormente las políticas RLS
+       correspondientes según el nivel de seguridad
+       requerido para el proyecto.
 
 
-       ================================================================
-       6. GITHUB
-       ================================================================
+       ==========================================================
+       9. GITHUB
+       ==========================================================
 
        Crear repositorio:
 
        TodoHogar
 
 
-       Crear:
+       Crear archivo:
 
        index.html
 
@@ -2282,35 +2672,40 @@
        git push -u origin main
 
 
-       ================================================================
-       7. GITHUB PAGES
-       ================================================================
+       ==========================================================
+       10. GITHUB PAGES
+       ==========================================================
 
        GitHub:
 
        Settings
-       → Pages
+       →
+       Pages
+
 
        Build and deployment:
 
        Deploy from branch
 
+
        Branch:
 
        main
+
 
        Folder:
 
        /root
 
-       Save
+
+       Save.
 
 
-       ================================================================
-       8. VERCEL
-       ================================================================
+       ==========================================================
+       11. VERCEL
+       ==========================================================
 
-       Ingresar a Vercel.
+       Crear proyecto en Vercel.
 
        Importar repositorio:
 
@@ -2326,9 +2721,9 @@
        Deploy.
 
 
-       ================================================================
-       9. PENTAHO - SUPABASE
-       ================================================================
+       ==========================================================
+       12. PENTAHO
+       ==========================================================
 
        Instalar Pentaho Data Integration.
 
@@ -2339,21 +2734,23 @@
        postgresql-42.x.x.jar
 
 
-       Colocarlo en la carpeta de drivers de Pentaho.
-
+       Colocar el archivo en la carpeta de drivers
+       de Pentaho.
 
        Reiniciar Spoon.
 
 
-       ================================================================
-       10. CONEXIÓN POSTGRESQL
-       ================================================================
+       ==========================================================
+       13. CONEXIÓN SUPABASE - PENTAHO
+       ==========================================================
 
-       En Pentaho:
+       Pentaho:
 
        View
-       → Database connections
-       → New
+       →
+       Database connections
+       →
+       New
 
 
        Seleccionar:
@@ -2361,48 +2758,44 @@
        PostgreSQL
 
 
-       Datos:
+       Configurar:
 
        Connection Name:
-
        Supabase
 
 
        Host:
-
        HOST_SUPABASE
 
 
        Port:
-
        5432
 
 
        Database:
-
        postgres
 
 
        User:
-
        USUARIO
 
 
        Password:
-
        CONTRASEÑA
 
 
-       Los datos exactos deben copiarse desde:
+       Los datos exactos se obtienen desde:
 
        Supabase
-       → Project Settings
-       → Database
+       →
+       Project Settings
+       →
+       Database
 
 
-       ================================================================
-       11. TABLE INPUT
-       ================================================================
+       ==========================================================
+       14. TABLE INPUT
+       ==========================================================
 
        Crear transformación.
 
@@ -2430,9 +2823,9 @@
        Ejecutar Preview.
 
 
-       ================================================================
-       12. PROCESO ETL
-       ================================================================
+       ==========================================================
+       15. ETL
+       ==========================================================
 
        EXTRACT:
 
@@ -2452,26 +2845,25 @@
        Flujo:
 
        Table Input
-           ↓
+            |
+            v
        Select Values
-           ↓
+            |
+            v
        Filter Rows
-           ↓
+            |
+            v
        Table Output
 
 
-       ================================================================
-       13. MYSQL
-       ================================================================
-
-       Crear base:
+       ==========================================================
+       16. MYSQL
+       ==========================================================
 
        CREATE DATABASE todohogar;
 
        USE todohogar;
 
-
-       Ejemplo:
 
        CREATE TABLE productos (
 
@@ -2488,21 +2880,15 @@
        );
 
 
-       ================================================================
-       14. POWER BI
-       ================================================================
+       ==========================================================
+       17. POWER BI
+       ==========================================================
 
-       Abrir:
-
-       Power BI Desktop
-
+       Abrir Power BI Desktop.
 
        Seleccionar:
 
        Obtener datos
-
-
-       Seleccionar:
 
        MySQL database
 
@@ -2512,20 +2898,20 @@
        localhost
 
 
-       Base:
+       Base de datos:
 
        todohogar
 
 
-       Introducir credenciales.
+       Introducir usuario y contraseña.
 
 
        Seleccionar las tablas.
 
 
-       ================================================================
-       15. MODELO RELACIONAL
-       ================================================================
+       ==========================================================
+       18. MODELO RELACIONAL
+       ==========================================================
 
        clientes.id
              |
@@ -2548,21 +2934,9 @@
        detalle_ventas.producto_id
 
 
-       ================================================================
-       16. MODELO ESTRELLA
-       ================================================================
-
-       Para análisis empresarial se puede construir:
-
-                   DIM_CLIENTE
-                        |
-                        |
-       DIM_PRODUCTO -- FACT_VENTAS -- DIM_FECHA
-
-
-       ================================================================
-       17. MEDIDAS DAX
-       ================================================================
+       ==========================================================
+       19. MEDIDAS DAX
+       ==========================================================
 
        Ventas Totales =
        SUM(ventas[total])
@@ -2583,17 +2957,17 @@
        )
 
 
-       ================================================================
-       18. DASHBOARD
-       ================================================================
+       ==========================================================
+       20. DASHBOARD
+       ==========================================================
 
-       Crear:
+       Incluir:
 
-       • Tarjeta de ventas totales.
+       • Ventas totales.
 
-       • Tarjeta de número de ventas.
+       • Número de ventas.
 
-       • Tarjeta de ticket promedio.
+       • Ticket promedio.
 
        • Ventas por categoría.
 
@@ -2605,18 +2979,18 @@
 
        • Clientes con mayor volumen de compras.
 
-       • Segmentador por fecha.
+       • Filtro por fecha.
 
-       • Segmentador por categoría.
+       • Filtro por categoría.
 
 
-       ================================================================
-       19. EXPLICACIÓN PARA EL EXAMEN
-       ================================================================
+       ==========================================================
+       21. FLUJO PARA EXPLICAR EN EL EXAMEN
+       ==========================================================
 
-       1. El usuario ingresa a TodoHogar.
+       1. El usuario entra a TodoHogar.
 
-       2. Busca productos.
+       2. Busca un producto.
 
        3. Filtra por categoría.
 
@@ -2636,7 +3010,7 @@
 
        11. Supabase registra la venta.
 
-       12. Supabase registra el detalle de la venta.
+       12. Supabase registra el detalle.
 
        13. Pentaho obtiene los datos mediante JDBC.
 
@@ -2644,7 +3018,7 @@
 
        15. Pentaho carga los datos en MySQL.
 
-       16. Power BI obtiene los datos de MySQL.
+       16. Power BI obtiene los datos.
 
        17. Se construye el modelo relacional.
 
@@ -2652,22 +3026,10 @@
 
        19. Se construye el dashboard.
 
-       20. El resultado final es una arquitectura:
 
-       WEB
-         ↓
-       SUPABASE
-         ↓
-       PENTAHO
-         ↓
-       MYSQL
-         ↓
-       POWER BI
-
-
-       ================================================================
+       ==========================================================
        FIN DEL PROYECTO TODOHOGAR
-       ================================================================
+       ==========================================================
 
   -->
 
