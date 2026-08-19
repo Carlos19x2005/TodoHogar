@@ -7,6 +7,7 @@
   <title>TodoHogar | Electrodomésticos</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     tailwind.config = {
       theme: {
@@ -323,65 +324,15 @@
   </footer>
 
   <script>
-    const products = [
-      {
-        id: 1,
-        name: "Refrigeradora French Door RI-992I-NE",
-        category: "Refrigeradoras",
-        description: "Refrigeradora French Door de acabado negro con tecnología Inverter.",
-        price: 1915.00,
-        image: "assets/refrigeradora.png"
-      },
-      {
-        id: 2,
-        name: "Lavadora",
-        category: "Lavadoras",
-        description: "Lavadora de gran capacidad para facilitar el cuidado diario de tu ropa.",
-        price: 435.00,
-        image: "https://www.artefacta.com/media/catalog/product/1/5/158636-1_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1040&width=1040&canvas=1040:1040"
-      },
-      {
-        id: 3,
-        name: "Microondas",
-        category: "Microondas",
-        description: "Microondas práctico para calentar y preparar alimentos rápidamente.",
-        price: 149.99,
-        image: "https://pycca.vteximg.com.br/arquivos/ids/195117-600-600/A01877.jpg?v=637401830101870000"
-      },
-      {
-        id: 4,
-        name: "Licuadora",
-        category: "Licuadoras",
-        description: "Licuadora potente para preparar bebidas, batidos y recetas.",
-        price: 135.00,
-        image: "https://www.artefacta.com/media/catalog/product/4/6/469922800011_1_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1040&width=1040&canvas=1040:1040"
-      },
-      {
-        id: 5,
-        name: "Horno Eléctrico Challenger",
-        category: "Hornos eléctricos",
-        description: "Horno eléctrico de diseño moderno para cocinar y hornear en casa.",
-        price: 439.00,
-        image: "assets/horno-electrico.png"
-      },
-      {
-        id: 6,
-        name: "Cafetera Automática",
-        category: "Cafeteras",
-        description: "Cafetera automática con diseño profesional para preparar café en casa.",
-        price: 595.00,
-        image: "assets/cafetera-automatica.png"
-      },
-      {
-        id: 7,
-        name: "Secadora de Ropa",
-        category: "Secadoras",
-        description: "Secadora de ropa para un secado práctico y eficiente.",
-        price: 729.01,
-        image: "https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcTW1E9KXiQYkG50pNd7n1qruSL1mywxYMl6RuskauqyWudInyJoGQDkhjaCUfMbcGFloag_KT0xEs5nwLXnVBd91fk2BQwWLmj3xC92J7MJ1y_oNmnYVkktTfGg11wryfxw76d6qA&usqp=CAc"
-      }
-    ];
+    // ======= CONEXIÓN A SUPABASE =======
+    // Reemplaza estos dos valores con los de tu proyecto:
+    // Project Settings → API → Project URL / anon public key
+    const SUPABASE_URL = "https://qejmqlbmelzkwfwngmzc.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFlam1xbGJtZWx6a3dmd25nbXpjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcxNTIyODksImV4cCI6MjEwMjcyODI4OX0.oRI61xwy1HepsmGK1mahdiDZs8Dx9pkHvgwGjB5aULk";
 
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    let products = [];
     let availableProducts = [];
     let cart = [];
     let activeCategory = "Todos";
@@ -402,7 +353,24 @@
       });
     }
 
+    async function loadProductsFromSupabase() {
+      const { data, error } = await supabaseClient
+        .from("products")
+        .select("*")
+        .order("id", { ascending: true });
+
+      if (error) {
+        console.error("Error cargando productos desde Supabase:", error.message);
+        products = [];
+        return;
+      }
+
+      products = data || [];
+    }
+
     async function validateProductImages() {
+      await loadProductsFromSupabase();
+
       const checks = await Promise.all(
         products.map(async product => ({
           product,
@@ -631,7 +599,7 @@
       }`;
     }
 
-    document.getElementById("orderForm").addEventListener("submit", event => {
+    document.getElementById("orderForm").addEventListener("submit", async event => {
       event.preventDefault();
 
       const name = document.getElementById("customerName").value.trim();
@@ -644,18 +612,64 @@
         return;
       }
 
-      showOrderMessage(
-        "¡Pedido confirmado! Gracias por elegir TodoHogar.",
-        true
-      );
+      const submitButton = event.target.querySelector('button[type="submit"]');
+      if (submitButton) submitButton.disabled = true;
 
-      cart = [];
-      renderCart();
-      document.getElementById("orderForm").reset();
+      const { details, subtotal, iva, total } = getTotals();
 
-      setTimeout(() => {
-        closeOrder();
-      }, 1800);
+      try {
+        // 1. Guarda el pedido en la tabla "orders"
+        const { data: orderRow, error: orderError } = await supabaseClient
+          .from("orders")
+          .insert({
+            customer_name: name,
+            customer_phone: phone,
+            customer_email: email,
+            customer_address: address,
+            subtotal: subtotal,
+            iva: iva,
+            total: total
+          })
+          .select()
+          .single();
+
+        if (orderError) throw orderError;
+
+        // 2. Guarda cada producto del carrito en "order_items"
+        const items = details.map(item => ({
+          order_id: orderRow.id,
+          product_id: item.id,
+          quantity: item.quantity,
+          unit_price: item.price
+        }));
+
+        const { error: itemsError } = await supabaseClient
+          .from("order_items")
+          .insert(items);
+
+        if (itemsError) throw itemsError;
+
+        showOrderMessage(
+          "¡Pedido confirmado! Gracias por elegir TodoHogar.",
+          true
+        );
+
+        cart = [];
+        renderCart();
+        document.getElementById("orderForm").reset();
+
+        setTimeout(() => {
+          closeOrder();
+        }, 1800);
+      } catch (err) {
+        console.error("Error al guardar el pedido:", err.message);
+        showOrderMessage(
+          "No se pudo enviar el pedido. Intenta de nuevo.",
+          false
+        );
+      } finally {
+        if (submitButton) submitButton.disabled = false;
+      }
     });
 
     document.getElementById("cartButton").addEventListener("click", openCart);
