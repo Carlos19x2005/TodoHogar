@@ -1,1857 +1,782 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TodoHogar | Electrodomésticos para tu hogar</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="TodoHogar - tienda de electrodomésticos">
+  <title>TodoHogar | Electrodomésticos</title>
 
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <!-- Supabase -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-    <style>
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-            background: #f8fafc;
-        }
-
-        .product-card {
-            transition: all 0.3s ease;
-        }
-
-        .product-card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 20px 35px rgba(0,0,0,0.10);
-        }
-
-        .product-image {
-            height: 230px;
-            object-fit: contain;
-            width: 100%;
-        }
-
-        .modal {
-            animation: aparecer 0.25s ease;
-        }
-
-        @keyframes aparecer {
-            from {
-                opacity: 0;
-                transform: scale(0.95);
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              50: "#eef7ff", 100: "#d9edff", 500: "#1687e8",
+              600: "#0875d1", 700: "#075eaa", 900: "#063b6b"
             }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
+          },
+          boxShadow: {
+            soft: "0 12px 40px rgba(15, 23, 42, .08)"
+          }
         }
-    </style>
+      }
+    }
+  </script>
+
+  <style>
+    html { scroll-behavior: smooth; }
+    body { background: #f7f9fc; }
+    .glass { background: rgba(255,255,255,.88); backdrop-filter: blur(14px); }
+    .product-card { transition: transform .25s ease, box-shadow .25s ease; }
+    .product-card:hover { transform: translateY(-5px); box-shadow: 0 18px 45px rgba(15,23,42,.12); }
+    .product-card img { transition: transform .35s ease; }
+    .product-card:hover img { transform: scale(1.045); }
+    .line-clamp-2 {
+      display: -webkit-box; -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .hide-scrollbar::-webkit-scrollbar { display:none; }
+    .hide-scrollbar { scrollbar-width:none; }
+  </style>
 </head>
 
 <body class="text-slate-800">
 
-<!-- =========================================================
-     HEADER
-========================================================= -->
+  <!-- ========================= HEADER ========================= -->
+  <header class="sticky top-0 z-40 border-b border-slate-200/80 glass">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="h-20 flex items-center gap-4">
 
-<header class="bg-white shadow-md sticky top-0 z-40">
+        <a href="#" class="flex items-center gap-3 shrink-0">
+          <div class="w-11 h-11 rounded-2xl bg-primary-600 text-white grid place-items-center font-black shadow-lg">TH</div>
+          <div>
+            <div class="text-xl font-black tracking-tight text-slate-950">TodoHogar</div>
+            <div class="text-[11px] text-slate-500">Electrodomésticos para tu hogar</div>
+          </div>
+        </a>
 
-    <div class="max-w-7xl mx-auto px-4 py-4">
-
-        <div class="flex flex-col md:flex-row items-center justify-between gap-4">
-
-            <!-- LOGO -->
-            <div class="flex items-center gap-3">
-                <div class="bg-blue-600 text-white p-3 rounded-xl text-2xl">
-                    🏠
-                </div>
-
-                <div>
-                    <h1 class="text-2xl font-bold text-blue-700">
-                        TodoHogar
-                    </h1>
-
-                    <p class="text-xs text-gray-500">
-                        Electrodomésticos para tu hogar
-                    </p>
-                </div>
-            </div>
-
-            <!-- BUSCADOR -->
-            <div class="w-full md:w-96">
-                <div class="relative">
-
-                    <input
-                        id="searchInput"
-                        type="text"
-                        placeholder="Buscar productos..."
-                        class="w-full border border-gray-300 rounded-xl px-4 py-3 pl-11 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-
-                    <span class="absolute left-4 top-3.5">
-                        🔎
-                    </span>
-
-                </div>
-            </div>
-
-            <!-- CARRITO -->
-            <button
-                onclick="abrirCarrito()"
-                class="relative bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl font-semibold transition"
-            >
-
-                🛒 Carrito
-
-                <span
-                    id="cartCount"
-                    class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center"
-                >
-                    0
-                </span>
-
-            </button>
-
+        <div class="hidden md:block flex-1 max-w-xl mx-auto">
+          <div class="relative">
+            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">⌕</span>
+            <input id="searchInput" type="search"
+              placeholder="Buscar un electrodoméstico..."
+              class="w-full rounded-2xl border border-slate-200 bg-slate-50/90 pl-11 pr-4 py-3.5 outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+          </div>
         </div>
 
+        <button id="cartButton"
+          class="relative ml-auto rounded-2xl bg-slate-950 hover:bg-primary-700 text-white px-4 py-3 font-bold transition shadow-sm">
+          🛒 <span class="hidden sm:inline">Carrito</span>
+          <span id="cartCount"
+            class="absolute -right-2 -top-2 min-w-6 h-6 px-1 rounded-full bg-primary-600 text-white text-xs grid place-items-center border-2 border-white">0</span>
+        </button>
+      </div>
+
+      <div class="md:hidden pb-4">
+        <input id="searchInputMobile" type="search" placeholder="Buscar un electrodoméstico..."
+          class="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:ring-2 focus:ring-primary-500">
+      </div>
+
+      <nav id="categoryFilters" class="flex gap-2 overflow-x-auto hide-scrollbar pb-4">
+        <button data-category="Todos" class="category-btn shrink-0 rounded-full bg-primary-600 text-white px-4 py-2 text-sm font-bold">Todos</button>
+        <button data-category="Refrigeradoras" class="category-btn shrink-0 rounded-full bg-slate-100 hover:bg-slate-200 px-4 py-2 text-sm font-semibold">Refrigeradoras</button>
+        <button data-category="Lavadoras" class="category-btn shrink-0 rounded-full bg-slate-100 hover:bg-slate-200 px-4 py-2 text-sm font-semibold">Lavadoras</button>
+        <button data-category="Microondas" class="category-btn shrink-0 rounded-full bg-slate-100 hover:bg-slate-200 px-4 py-2 text-sm font-semibold">Microondas</button>
+        <button data-category="Licuadoras" class="category-btn shrink-0 rounded-full bg-slate-100 hover:bg-slate-200 px-4 py-2 text-sm font-semibold">Licuadoras</button>
+        <button data-category="Hornos eléctricos" class="category-btn shrink-0 rounded-full bg-slate-100 hover:bg-slate-200 px-4 py-2 text-sm font-semibold">Hornos eléctricos</button>
+        <button data-category="Cafeteras" class="category-btn shrink-0 rounded-full bg-slate-100 hover:bg-slate-200 px-4 py-2 text-sm font-semibold">Cafeteras</button>
+        <button data-category="Secadoras" class="category-btn shrink-0 rounded-full bg-slate-100 hover:bg-slate-200 px-4 py-2 text-sm font-semibold">Secadoras</button>
+      </nav>
     </div>
+  </header>
 
-</header>
-
-
-<!-- =========================================================
-     HERO
-========================================================= -->
-
-<section class="bg-gradient-to-r from-blue-700 to-blue-500 text-white">
-
-    <div class="max-w-7xl mx-auto px-4 py-16 text-center">
-
-        <h2 class="text-4xl md:text-5xl font-extrabold mb-4">
-            Todo lo que tu hogar necesita
-        </h2>
-
-        <p class="text-lg text-blue-100 max-w-2xl mx-auto">
-            Encuentra refrigeradoras, lavadoras, microondas,
-            licuadoras y mucho más en TodoHogar.
+  <!-- ========================= HERO ========================= -->
+  <section class="relative overflow-hidden bg-slate-950 text-white">
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(22,135,232,.35),transparent_35%),radial-gradient(circle_at_10%_90%,rgba(7,94,170,.25),transparent_35%)]"></div>
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+      <div class="max-w-3xl">
+        <span class="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/10 px-4 py-2 text-sm font-bold">
+          ✦ Selección TodoHogar
+        </span>
+        <h1 class="mt-6 text-4xl md:text-6xl font-black tracking-tight leading-tight">
+          Tecnología que hace tu hogar más fácil.
+        </h1>
+        <p class="mt-5 text-lg md:text-xl text-slate-300 max-w-2xl">
+          Descubre electrodomésticos modernos y funcionales para cocinar, lavar, conservar y disfrutar cada espacio de tu hogar.
         </p>
+        <a href="#catalogo"
+          class="inline-flex mt-8 items-center gap-2 bg-primary-500 hover:bg-primary-600 text-white px-6 py-3.5 rounded-2xl font-black transition shadow-lg">
+          Explorar catálogo <span>→</span>
+        </a>
+      </div>
+    </div>
+  </section>
 
-        <button
-            onclick="document.getElementById('catalogo').scrollIntoView()"
-            class="mt-8 bg-white text-blue-700 px-7 py-3 rounded-xl font-bold hover:bg-gray-100 transition"
-        >
-            Ver productos
-        </button>
+  <!-- ========================= BENEFICIOS ========================= -->
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 relative z-10">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="bg-white rounded-2xl p-5 shadow-soft border border-slate-100">
+        <div class="text-2xl">✓</div>
+        <div class="mt-2 font-black">Catálogo seleccionado</div>
+        <p class="text-sm text-slate-500 mt-1">Solo mostramos productos con una imagen válida disponible.</p>
+      </div>
+      <div class="bg-white rounded-2xl p-5 shadow-soft border border-slate-100">
+        <div class="text-2xl">🛒</div>
+        <div class="mt-2 font-black">Compra sencilla</div>
+        <p class="text-sm text-slate-500 mt-1">Agrega productos y revisa subtotal, IVA y total.</p>
+      </div>
+      <div class="bg-white rounded-2xl p-5 shadow-soft border border-slate-100">
+        <div class="text-2xl">🔒</div>
+        <div class="mt-2 font-black">Checkout académico</div>
+        <p class="text-sm text-slate-500 mt-1">Validación de formulario y registro preparado para Supabase.</p>
+      </div>
+    </div>
+  </section>
 
+  <!-- ========================= CATALOGO ========================= -->
+  <main id="catalogo" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+    <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-3 mb-8">
+      <div>
+        <p class="text-primary-600 font-black uppercase tracking-widest text-xs">TodoHogar</p>
+        <h2 class="text-3xl md:text-4xl font-black text-slate-950 mt-1">Nuestros productos</h2>
+        <p class="text-slate-500 mt-2">Productos con imágenes verificadas durante la carga.</p>
+      </div>
+      <p id="resultCount" class="text-sm font-semibold text-slate-500"></p>
     </div>
 
-</section>
-
-
-<!-- =========================================================
-     CATEGORÍAS
-========================================================= -->
-
-<section class="max-w-7xl mx-auto px-4 py-8">
-
-    <div class="flex flex-wrap justify-center gap-3">
-
-        <button
-            onclick="filtrarCategoria('Todos')"
-            class="categoria-btn bg-blue-600 text-white px-5 py-2 rounded-full"
-        >
-            Todos
-        </button>
-
-        <button
-            onclick="filtrarCategoria('Refrigeración')"
-            class="categoria-btn bg-white border px-5 py-2 rounded-full hover:bg-blue-50"
-        >
-            Refrigeración
-        </button>
-
-        <button
-            onclick="filtrarCategoria('Lavado')"
-            class="categoria-btn bg-white border px-5 py-2 rounded-full hover:bg-blue-50"
-        >
-            Lavado
-        </button>
-
-        <button
-            onclick="filtrarCategoria('Cocina')"
-            class="categoria-btn bg-white border px-5 py-2 rounded-full hover:bg-blue-50"
-        >
-            Cocina
-        </button>
-
-        <button
-            onclick="filtrarCategoria('Electrodomésticos pequeños')"
-            class="categoria-btn bg-white border px-5 py-2 rounded-full hover:bg-blue-50"
-        >
-            Electrodomésticos pequeños
-        </button>
-
+    <div id="loadingState" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div class="h-96 rounded-3xl bg-white border border-slate-200 animate-pulse"></div>
+      <div class="h-96 rounded-3xl bg-white border border-slate-200 animate-pulse"></div>
+      <div class="h-96 rounded-3xl bg-white border border-slate-200 animate-pulse"></div>
+      <div class="h-96 rounded-3xl bg-white border border-slate-200 animate-pulse"></div>
     </div>
 
-</section>
+    <div id="productGrid" class="hidden grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
 
-
-<!-- =========================================================
-     CATÁLOGO
-========================================================= -->
-
-<main
-    id="catalogo"
-    class="max-w-7xl mx-auto px-4 pb-16"
->
-
-    <div class="mb-8">
-
-        <h2 class="text-3xl font-bold">
-            Nuestros productos
-        </h2>
-
-        <p class="text-gray-500">
-            Productos seleccionados para equipar tu hogar.
-        </p>
-
+    <div id="emptyState" class="hidden text-center py-20">
+      <div class="text-5xl mb-4">🔎</div>
+      <h3 class="text-xl font-black">No encontramos productos</h3>
+      <p class="text-slate-500 mt-2">Prueba con otra búsqueda o categoría.</p>
     </div>
+  </main>
 
-    <div
-        id="productGrid"
-        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
-    >
+  <!-- ========================= CARRITO ========================= -->
+  <div id="cartOverlay" class="hidden fixed inset-0 z-50 bg-slate-950/60"></div>
+  <aside id="cartPanel"
+    class="fixed top-0 right-0 z-[60] h-full w-full sm:max-w-md bg-white shadow-2xl translate-x-full transition-transform duration-300 flex flex-col">
+    <div class="p-5 border-b flex items-center justify-between">
+      <div>
+        <h2 class="text-xl font-black">Tu carrito</h2>
+        <p class="text-sm text-slate-500">Resumen de tu pedido</p>
+      </div>
+      <button id="closeCart" class="w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 text-xl">×</button>
     </div>
+    <div id="cartItems" class="flex-1 overflow-y-auto p-5 space-y-4"></div>
+    <div class="border-t p-5 bg-slate-50">
+      <div class="flex justify-between text-sm mb-2"><span>Subtotal</span><span id="cartSubtotal">$0.00</span></div>
+      <div class="flex justify-between text-sm mb-2"><span>IVA (15%)</span><span id="cartIva">$0.00</span></div>
+      <div class="flex justify-between text-lg font-black border-t pt-3 mt-3"><span>Total</span><span id="cartTotal">$0.00</span></div>
+      <button id="checkoutButton"
+        class="w-full mt-5 rounded-2xl bg-primary-600 hover:bg-primary-700 text-white py-3.5 font-black disabled:opacity-40 disabled:cursor-not-allowed">
+        Proceder al pago
+      </button>
+    </div>
+  </aside>
 
-</main>
-
-
-<!-- =========================================================
-     CARRITO MODAL
-========================================================= -->
-
-<div
-    id="cartModal"
-    class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
->
-
-    <div
-        class="modal bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto"
-    >
-
-        <div class="flex justify-between items-center p-6 border-b">
-
-            <h2 class="text-2xl font-bold">
-                🛒 Mi carrito
-            </h2>
-
-            <button
-                onclick="cerrarCarrito()"
-                class="text-gray-500 hover:text-red-500 text-2xl"
-            >
-                ✕
-            </button>
-
+  <!-- ========================= PAGO ========================= -->
+  <div id="paymentModal" class="hidden fixed inset-0 z-[70] bg-slate-950/70 p-4 overflow-y-auto">
+    <div class="min-h-full flex items-center justify-center py-8">
+      <div class="w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden">
+        <div class="p-6 border-b flex items-start justify-between">
+          <div>
+            <p class="text-primary-600 font-black text-xs uppercase tracking-widest">Checkout</p>
+            <h2 class="text-2xl font-black mt-1">Finalizar compra</h2>
+            <p class="text-sm text-slate-500 mt-1">Completa tus datos para registrar el pedido.</p>
+          </div>
+          <button id="closePayment" class="w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 text-xl">×</button>
         </div>
 
-        <div
-            id="cartItems"
-            class="p-6"
-        >
-        </div>
-
-        <div class="border-t p-6">
-
-            <div class="flex justify-between mb-2">
-                <span>Subtotal:</span>
-                <strong id="subtotal">$0.00</strong>
+        <form id="paymentForm" class="p-6 space-y-6">
+          <div>
+            <h3 class="font-black text-lg mb-3">Datos del cliente</h3>
+            <div class="grid sm:grid-cols-2 gap-4">
+              <input id="customerName" required type="text" placeholder="Nombre completo"
+                class="rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:ring-2 focus:ring-primary-500">
+              <input id="customerEmail" required type="email" placeholder="Correo electrónico"
+                class="rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:ring-2 focus:ring-primary-500">
             </div>
+          </div>
 
-            <div class="flex justify-between mb-2">
-                <span>IVA (15%):</span>
-                <strong id="iva">$0.00</strong>
+          <div>
+            <h3 class="font-black text-lg mb-3">Tarjeta</h3>
+            <div class="space-y-4">
+              <input id="cardName" required type="text" placeholder="Nombre del titular"
+                class="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:ring-2 focus:ring-primary-500">
+              <input id="cardNumber" required inputmode="numeric" maxlength="19"
+                placeholder="Número de tarjeta (16 dígitos)"
+                class="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:ring-2 focus:ring-primary-500">
+              <div class="grid grid-cols-2 gap-4">
+                <input id="cardExpiry" required type="text" maxlength="5" placeholder="MM/AA"
+                  class="rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:ring-2 focus:ring-primary-500">
+                <input id="cardCvc" required inputmode="numeric" maxlength="4" placeholder="CVC"
+                  class="rounded-2xl border border-slate-200 px-4 py-3 outline-none focus:ring-2 focus:ring-primary-500">
+              </div>
             </div>
+          </div>
 
-            <div class="flex justify-between text-xl font-bold border-t pt-3">
-                <span>Total:</span>
-                <strong id="total">$0.00</strong>
-            </div>
+          <div class="rounded-2xl bg-slate-50 p-4">
+            <div class="flex justify-between text-sm"><span>Subtotal</span><span id="paymentSubtotal">$0.00</span></div>
+            <div class="flex justify-between text-sm mt-2"><span>IVA</span><span id="paymentIva">$0.00</span></div>
+            <div class="flex justify-between font-black text-lg border-t mt-3 pt-3"><span>Total</span><span id="paymentTotal">$0.00</span></div>
+          </div>
 
-            <button
-                onclick="abrirPago()"
-                class="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl mt-5 font-bold"
-            >
-                💳 Proceder al pago
-            </button>
+          <p class="text-xs text-slate-500">
+            Demo académica: los datos de tarjeta solo se validan en el navegador y no se guardan en Supabase.
+            Para pagos reales utiliza una pasarela segura.
+          </p>
 
-        </div>
+          <div id="paymentMessage" class="hidden rounded-2xl px-4 py-3 text-sm"></div>
 
-    </div>
-
-</div>
-
-
-<!-- =========================================================
-     MODAL DE PAGO
-========================================================= -->
-
-<div
-    id="paymentModal"
-    class="hidden fixed inset-0 bg-black/50 z-[60] flex items-center justify-center p-4"
->
-
-    <div
-        class="modal bg-white rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto"
-    >
-
-        <div class="flex justify-between items-center p-6 border-b">
-
-            <h2 class="text-2xl font-bold">
-                💳 Pago seguro
-            </h2>
-
-            <button
-                onclick="cerrarPago()"
-                class="text-gray-500 hover:text-red-500 text-2xl"
-            >
-                ✕
-            </button>
-
-        </div>
-
-        <form
-            id="paymentForm"
-            class="p-6 space-y-4"
-        >
-
-            <div>
-                <label class="block font-semibold mb-1">
-                    Nombre del titular
-                </label>
-
-                <input
-                    id="cardName"
-                    type="text"
-                    class="w-full border rounded-xl px-4 py-3"
-                    placeholder="Juan Pérez"
-                    required
-                >
-            </div>
-
-            <div>
-                <label class="block font-semibold mb-1">
-                    Número de tarjeta
-                </label>
-
-                <input
-                    id="cardNumber"
-                    type="text"
-                    maxlength="19"
-                    class="w-full border rounded-xl px-4 py-3"
-                    placeholder="1234 5678 9012 3456"
-                    required
-                >
-            </div>
-
-            <div class="grid grid-cols-2 gap-4">
-
-                <div>
-                    <label class="block font-semibold mb-1">
-                        Fecha MM/AA
-                    </label>
-
-                    <input
-                        id="cardDate"
-                        type="text"
-                        maxlength="5"
-                        class="w-full border rounded-xl px-4 py-3"
-                        placeholder="12/30"
-                        required
-                    >
-                </div>
-
-                <div>
-                    <label class="block font-semibold mb-1">
-                        CVC
-                    </label>
-
-                    <input
-                        id="cardCvc"
-                        type="password"
-                        maxlength="4"
-                        class="w-full border rounded-xl px-4 py-3"
-                        placeholder="123"
-                        required
-                    >
-                </div>
-
-            </div>
-
-            <div>
-                <label class="block font-semibold mb-1">
-                    Nombre del cliente
-                </label>
-
-                <input
-                    id="customerName"
-                    type="text"
-                    class="w-full border rounded-xl px-4 py-3"
-                    placeholder="Nombre completo"
-                    required
-                >
-            </div>
-
-            <div>
-                <label class="block font-semibold mb-1">
-                    Correo electrónico
-                </label>
-
-                <input
-                    id="customerEmail"
-                    type="email"
-                    class="w-full border rounded-xl px-4 py-3"
-                    placeholder="correo@email.com"
-                    required
-                >
-            </div>
-
-            <button
-                type="submit"
-                class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-bold"
-            >
-                Confirmar compra
-            </button>
-
+          <button type="submit"
+            class="w-full rounded-2xl bg-primary-600 hover:bg-primary-700 text-white py-3.5 font-black">
+            Confirmar compra
+          </button>
         </form>
-
+      </div>
     </div>
+  </div>
 
-</div>
-
-
-<!-- =========================================================
-     JAVASCRIPT
-========================================================= -->
+  <!-- ========================= FOOTER ========================= -->
+  <footer class="bg-slate-950 text-slate-300 mt-10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="grid md:grid-cols-3 gap-8">
+        <div>
+          <div class="text-white text-2xl font-black">TodoHogar</div>
+          <p class="text-sm mt-3 max-w-md text-slate-400">
+            Tienda web académica de electrodomésticos desarrollada con HTML, Tailwind CSS, JavaScript y Supabase.
+          </p>
+        </div>
+        <div>
+          <div class="font-black text-white mb-3">Tecnologías</div>
+          <p class="text-sm text-slate-400">HTML5 · Tailwind CSS · JavaScript Vanilla · Supabase · PostgreSQL</p>
+        </div>
+        <div>
+          <div class="font-black text-white mb-3">Estado del catálogo</div>
+          <p class="text-sm text-slate-400">Los productos cuya imagen no cargue correctamente se eliminan automáticamente de la vista.</p>
+        </div>
+      </div>
+      <div class="border-t border-slate-800 mt-10 pt-5 text-xs text-slate-500">
+        © 2026 TodoHogar · Proyecto académico.
+      </div>
+    </div>
+  </footer>
 
 <script>
+  /* ============================================================
+     1. SUPABASE
+     ============================================================ */
+  const SUPABASE_URL = "https://TU-PROYECTO.supabase.co";
+  const SUPABASE_KEY = "TU-ANON-PUBLIC-KEY";
+  let supabaseClient = null;
 
-    /* =====================================================
-       SUPABASE
-    ===================================================== */
+  if (window.supabase &&
+      SUPABASE_URL.startsWith("https://") &&
+      !SUPABASE_URL.includes("TU-PROYECTO") &&
+      SUPABASE_KEY &&
+      !SUPABASE_KEY.includes("TU-ANON")) {
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  }
 
-    const SUPABASE_URL = "TU_SUPABASE_URL";
-    const SUPABASE_KEY = "TU_SUPABASE_ANON_KEY";
+  /* ============================================================
+     2. PRODUCTOS
+     ============================================================
+     Las tres imágenes proporcionadas por el usuario están guardadas
+     localmente en /assets para que funcionen al subir el proyecto
+     completo a GitHub.
 
-    let supabaseClient = null;
-
-    if (
-        SUPABASE_URL !== "TU_SUPABASE_URL" &&
-        SUPABASE_KEY !== "TU_SUPABASE_ANON_KEY"
-    ) {
-        supabaseClient = window.supabase.createClient(
-            SUPABASE_URL,
-            SUPABASE_KEY
-        );
+     Las demás imágenes usan las URLs entregadas por el usuario.
+     Antes de mostrar un producto se comprueba que su imagen cargue.
+     Si la imagen falla, el producto se elimina del catálogo y no se
+     muestra ningún placeholder.
+  */
+  const products = [
+    {
+      id: 1,
+      name: "Refrigeradora French Door RI-992I-NE",
+      category: "Refrigeradoras",
+      description: "Refrigeradora French Door de acabado negro con tecnología Inverter.",
+      price: 1915.00,
+      image: "assets/refrigeradora.png"
+    },
+    {
+      id: 2,
+      name: "Lavadora",
+      category: "Lavadoras",
+      description: "Lavadora de gran capacidad para facilitar el cuidado diario de tu ropa.",
+      price: 435.00,
+      image: "https://www.artefacta.com/media/catalog/product/1/5/158636-1_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1040&width=1040&canvas=1040:1040"
+    },
+    {
+      id: 3,
+      name: "Microondas",
+      category: "Microondas",
+      description: "Microondas práctico para calentar y preparar alimentos rápidamente.",
+      price: 149.99,
+      image: "https://pycca.vteximg.com.br/arquivos/ids/195117-600-600/A01877.jpg?v=637401830101870000"
+    },
+    {
+      id: 4,
+      name: "Licuadora",
+      category: "Licuadoras",
+      description: "Licuadora potente para preparar bebidas, batidos y recetas.",
+      price: 135.00,
+      image: "https://www.artefacta.com/media/catalog/product/4/6/469922800011_1_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1040&width=1040&canvas=1040:1040"
+    },
+    {
+      id: 5,
+      name: "Horno Eléctrico Challenger",
+      category: "Hornos eléctricos",
+      description: "Horno eléctrico de diseño moderno para cocinar y hornear en casa.",
+      price: 439.00,
+      image: "assets/horno-electrico.png"
+    },
+    {
+      id: 6,
+      name: "Cafetera Automática",
+      category: "Cafeteras",
+      description: "Cafetera automática con diseño profesional para preparar café en casa.",
+      price: 595.00,
+      image: "assets/cafetera-automatica.png"
+    },
+    {
+      id: 7,
+      name: "Secadora de Ropa",
+      category: "Secadoras",
+      description: "Secadora de ropa para un secado práctico y eficiente.",
+      price: 729.01,
+      image: "https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcTW1E9KXiQYkG50pNd7n1qruSL1mywxYMl6RuskauqyWudInyJoGQDkhjaCUfMbcGFloag_KT0xEs5nwLXnVBd91fk2BQwWLmj3xC92J7MJ1y_oNmnYVkktTfGg11wryfxw76d6qA&usqp=CAc"
     }
+  ];
 
+  let availableProducts = [];
+  let cart = [];
+  let activeCategory = "Todos";
+  let searchTerm = "";
 
-    /* =====================================================
-       PRODUCTOS
-    ===================================================== */
+  const money = value =>
+    new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(value);
 
-    const productos = [
+  function imageLoads(url) {
+    return new Promise(resolve => {
+      const img = new Image();
+      img.onload = () => resolve(true);
+      img.onerror = () => resolve(false);
+      img.src = url;
+    });
+  }
 
-        {
-            id: 1,
-            nombre: "Refrigeradora French Door RI-992I NE",
-            categoria: "Refrigeración",
-            descripcion: "Refrigeradora moderna French Door de gran capacidad.",
-            precio: 1915.00,
-            imagen: "https://www.indurama.com/refrigeradora-french-door-ri-992i-ne/p"
-        },
+  async function validateProductImages() {
+    const checks = await Promise.all(
+      products.map(async product => ({
+        product,
+        valid: await imageLoads(product.image)
+      }))
+    );
 
-        {
-            id: 2,
-            nombre: "Lavadora",
-            categoria: "Lavado",
-            descripcion: "Lavadora moderna para facilitar el cuidado de tu ropa.",
-            precio: 435.00,
-            imagen: "https://www.artefacta.com/media/catalog/product/1/5/158636-1_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1040&width=1040&canvas=1040:1040"
-        },
+    availableProducts = checks
+      .filter(item => item.valid)
+      .map(item => item.product);
 
-        {
-            id: 3,
-            nombre: "Microondas",
-            categoria: "Cocina",
-            descripcion: "Microondas práctico para calentar y preparar tus alimentos.",
-            precio: 149.99,
-            imagen: "https://pycca.vteximg.com.br/arquivos/ids/195117-600-600/A01877.jpg?v=637401830101870000"
-        },
+    document.getElementById("loadingState").classList.add("hidden");
+    document.getElementById("productGrid").classList.remove("hidden");
+    renderProducts();
+  }
 
-        {
-            id: 4,
-            nombre: "Licuadora",
-            categoria: "Electrodomésticos pequeños",
-            descripcion: "Licuadora potente para preparar bebidas y alimentos.",
-            precio: 135.00,
-            imagen: "https://www.artefacta.com/media/catalog/product/4/6/469922800011_1_1.jpg?optimize=medium&bg-color=255,255,255&fit=bounds&height=1040&width=1040&canvas=1040:1040"
-        },
+  function renderProducts() {
+    const grid = document.getElementById("productGrid");
+    const empty = document.getElementById("emptyState");
+    const resultCount = document.getElementById("resultCount");
 
-        {
-            id: 5,
-            nombre: "Horno eléctrico",
-            categoria: "Cocina",
-            descripcion: "Horno eléctrico ideal para preparar diferentes recetas.",
-            precio: 439.00,
-            imagen: "imagenes/horno.webp"
-        },
+    const filtered = availableProducts.filter(product => {
+      const categoryOK = activeCategory === "Todos" || product.category === activeCategory;
+      const text = `${product.name} ${product.category} ${product.description}`.toLowerCase();
+      return categoryOK && text.includes(searchTerm.toLowerCase());
+    });
 
-        {
-            id: 6,
-            nombre: "Cafetera automática",
-            categoria: "Electrodomésticos pequeños",
-            descripcion: "Cafetera automática para disfrutar café preparado en casa.",
-            precio: 595.00,
-            imagen: "imagenes/cafetera.webp"
-        },
+    resultCount.textContent = `${filtered.length} producto(s) disponible(s)`;
+    grid.innerHTML = "";
 
-        {
-            id: 7,
-            nombre: "Cocina de inducción",
-            categoria: "Cocina",
-            descripcion: "Cocina de inducción moderna y eficiente.",
-            precio: 194.00,
-            imagen: "imagenes/cocina-induccion.webp"
-        },
+    if (!filtered.length) {
+      empty.classList.remove("hidden");
+      return;
+    }
+    empty.classList.add("hidden");
 
-        {
-            id: 8,
-            nombre: "Secadora de ropa",
-            categoria: "Lavado",
-            descripcion: "Secadora de ropa práctica para un secado rápido y eficiente.",
-            precio: 729.01,
-            imagen: "https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcTW1E9KXiQYkG50pNd7n1qruSL1mywxYMl6RuskauqyWudInyJoGQDkhjaCUfMbcGFloag_KT0xEs5nwLXnVBd91fk2BQwWLmj3xC92J7MJ1y_oNmnYVkktTfGg11wryfxw76d6qA&usqp=CAc"
-        }
+    filtered.forEach(product => {
+      const card = document.createElement("article");
+      card.className = "product-card bg-white rounded-3xl border border-slate-200 overflow-hidden flex flex-col";
 
-    ];
-
-
-    /* =====================================================
-       CARRITO
-    ===================================================== */
-
-    let carrito = [];
-
-    let categoriaActual = "Todos";
-
-
-    function renderProductos() {
-
-        const grid = document.getElementById("productGrid");
-
-        const busqueda =
-            document.getElementById("searchInput").value
-            .toLowerCase()
-            .trim();
-
-        const productosFiltrados = productos.filter(producto => {
-
-            const coincideCategoria =
-                categoriaActual === "Todos" ||
-                producto.categoria === categoriaActual;
-
-            const coincideBusqueda =
-                producto.nombre.toLowerCase().includes(busqueda) ||
-                producto.descripcion.toLowerCase().includes(busqueda);
-
-            return coincideCategoria && coincideBusqueda;
-
-        });
-
-
-        if (productosFiltrados.length === 0) {
-
-            grid.innerHTML = `
-                <div class="col-span-full text-center py-16">
-                    <div class="text-6xl mb-4">🔎</div>
-                    <h3 class="text-2xl font-bold">
-                        No encontramos productos
-                    </h3>
-                    <p class="text-gray-500 mt-2">
-                        Intenta con otra búsqueda.
-                    </p>
-                </div>
-            `;
-
-            return;
-        }
-
-
-        grid.innerHTML = productosFiltrados.map(producto => `
-
-            <div class="product-card bg-white rounded-2xl overflow-hidden border">
-
-                <div class="bg-gray-50 p-4">
-
-                    <img
-                        src="${producto.imagen}"
-                        alt="${producto.nombre}"
-                        class="product-image"
-                        onerror="this.onerror=null; this.src='https://placehold.co/600x400?text=TodoHogar';"
-                    >
-
-                </div>
-
-                <div class="p-5">
-
-                    <span class="text-xs font-semibold text-blue-600 uppercase">
-                        ${producto.categoria}
-                    </span>
-
-                    <h3 class="font-bold text-lg mt-2">
-                        ${producto.nombre}
-                    </h3>
-
-                    <p class="text-gray-500 text-sm mt-2 min-h-[45px]">
-                        ${producto.descripcion}
-                    </p>
-
-                    <div class="flex items-center justify-between mt-5">
-
-                        <div>
-                            <p class="text-xs text-gray-400">
-                                Precio
-                            </p>
-
-                            <p class="text-2xl font-bold text-blue-700">
-                                $${producto.precio.toFixed(2)}
-                            </p>
-                        </div>
-
-                        <button
-                            onclick="agregarCarrito(${producto.id})"
-                            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-xl font-semibold"
-                        >
-                            🛒 Agregar
-                        </button>
-
-                    </div>
-
-                </div>
-
+      card.innerHTML = `
+        <div class="h-64 bg-slate-50 flex items-center justify-center overflow-hidden">
+          <img src="${product.image}" alt="${product.name}" class="w-full h-full object-contain" loading="lazy">
+        </div>
+        <div class="p-5 flex flex-col flex-1">
+          <span class="text-[11px] font-black text-primary-600 uppercase tracking-widest">${product.category}</span>
+          <h3 class="mt-2 font-black text-lg text-slate-950 leading-snug">${product.name}</h3>
+          <p class="mt-2 text-sm text-slate-500 line-clamp-2">${product.description}</p>
+          <div class="mt-auto pt-5 flex items-end justify-between gap-3">
+            <div>
+              <div class="text-2xl font-black text-slate-950">${money(product.price)}</div>
+              <div class="text-xs text-slate-400">Precio referencial</div>
             </div>
+            <button onclick="addToCart(${product.id})"
+              class="rounded-2xl bg-primary-600 hover:bg-primary-700 text-white px-4 py-3 font-black transition">
+              Agregar
+            </button>
+          </div>
+        </div>`;
+      grid.appendChild(card);
+    });
+  }
 
-        `).join("");
+  function addToCart(productId) {
+    const existing = cart.find(item => item.productId === productId);
+    if (existing) existing.quantity++;
+    else cart.push({ productId, quantity: 1 });
+    renderCart();
+    openCart();
+  }
 
+  function changeQuantity(productId, delta) {
+    const item = cart.find(item => item.productId === productId);
+    if (!item) return;
+    item.quantity += delta;
+    if (item.quantity <= 0) cart = cart.filter(x => x.productId !== productId);
+    renderCart();
+  }
+
+  function removeFromCart(productId) {
+    cart = cart.filter(item => item.productId !== productId);
+    renderCart();
+  }
+
+  function getCartDetails() {
+    return cart.map(item => {
+      const product = availableProducts.find(p => p.id === item.productId);
+      return product ? { ...product, quantity: item.quantity, lineTotal: product.price * item.quantity } : null;
+    }).filter(Boolean);
+  }
+
+  function getTotals() {
+    const details = getCartDetails();
+    const subtotal = details.reduce((sum, item) => sum + item.lineTotal, 0);
+    const iva = subtotal * 0.15;
+    return { details, subtotal, iva, total: subtotal + iva };
+  }
+
+  function renderCart() {
+    const container = document.getElementById("cartItems");
+    const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+    const { details, subtotal, iva, total } = getTotals();
+
+    document.getElementById("cartCount").textContent = count;
+    document.getElementById("cartSubtotal").textContent = money(subtotal);
+    document.getElementById("cartIva").textContent = money(iva);
+    document.getElementById("cartTotal").textContent = money(total);
+    document.getElementById("checkoutButton").disabled = cart.length === 0;
+
+    if (!details.length) {
+      container.innerHTML = `
+        <div class="h-full grid place-items-center text-center text-slate-500 py-16">
+          <div><div class="text-5xl mb-4">🛒</div>
+          <p class="font-black">Tu carrito está vacío</p>
+          <p class="text-sm mt-1">Agrega productos del catálogo.</p></div>
+        </div>`;
+      return;
     }
 
+    container.innerHTML = details.map(item => `
+      <div class="border border-slate-200 rounded-2xl p-3">
+        <div class="flex gap-3">
+          <img src="${item.image}" alt="${item.name}" class="w-20 h-20 object-contain rounded-xl bg-slate-50">
+          <div class="flex-1 min-w-0">
+            <div class="font-black text-sm">${item.name}</div>
+            <div class="text-sm text-slate-500 mt-1">${money(item.price)} c/u</div>
+            <div class="mt-2 flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <button onclick="changeQuantity(${item.id}, -1)" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200">−</button>
+                <span class="font-black w-5 text-center">${item.quantity}</span>
+                <button onclick="changeQuantity(${item.id}, 1)" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200">+</button>
+              </div>
+              <button onclick="removeFromCart(${item.id})" class="text-xs text-red-600 hover:underline">Eliminar</button>
+            </div>
+          </div>
+        </div>
+      </div>`).join("");
+  }
 
-    /* =====================================================
-       BUSCADOR
-    ===================================================== */
+  function openCart() {
+    document.getElementById("cartOverlay").classList.remove("hidden");
+    document.getElementById("cartPanel").classList.remove("translate-x-full");
+  }
 
-    document
-        .getElementById("searchInput")
-        .addEventListener("input", renderProductos);
+  function closeCart() {
+    document.getElementById("cartPanel").classList.add("translate-x-full");
+    document.getElementById("cartOverlay").classList.add("hidden");
+  }
 
+  function openPayment() {
+    if (!cart.length) return;
+    const { subtotal, iva, total } = getTotals();
+    document.getElementById("paymentSubtotal").textContent = money(subtotal);
+    document.getElementById("paymentIva").textContent = money(iva);
+    document.getElementById("paymentTotal").textContent = money(total);
+    document.getElementById("paymentMessage").className = "hidden rounded-2xl px-4 py-3 text-sm";
+    document.getElementById("paymentModal").classList.remove("hidden");
+    closeCart();
+  }
 
-    /* =====================================================
-       FILTROS
-    ===================================================== */
+  function closePayment() {
+    document.getElementById("paymentModal").classList.add("hidden");
+  }
 
-    function filtrarCategoria(categoria) {
+  function showPaymentMessage(text, success) {
+    const box = document.getElementById("paymentMessage");
+    box.textContent = text;
+    box.className = `rounded-2xl px-4 py-3 text-sm ${success
+      ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+      : "bg-red-50 text-red-700 border border-red-200"}`;
+  }
 
-        categoriaActual = categoria;
+  function validCardNumber(value) {
+    const digits = value.replace(/\D/g, "");
+    if (digits.length !== 16) return false;
+    let sum = 0, shouldDouble = false;
+    for (let i = digits.length - 1; i >= 0; i--) {
+      let n = Number(digits[i]);
+      if (shouldDouble) { n *= 2; if (n > 9) n -= 9; }
+      sum += n;
+      shouldDouble = !shouldDouble;
+    }
+    return sum % 10 === 0;
+  }
 
-        renderProductos();
+  document.getElementById("cardNumber").addEventListener("input", e => {
+    const digits = e.target.value.replace(/\D/g, "").slice(0, 16);
+    e.target.value = digits.replace(/(.{4})/g, "$1 ").trim();
+  });
 
+  document.getElementById("cardExpiry").addEventListener("input", e => {
+    const digits = e.target.value.replace(/\D/g, "").slice(0, 4);
+    e.target.value = digits.length > 2 ? digits.slice(0,2) + "/" + digits.slice(2) : digits;
+  });
+
+  document.getElementById("paymentForm").addEventListener("submit", async e => {
+    e.preventDefault();
+
+    const name = document.getElementById("customerName").value.trim();
+    const email = document.getElementById("customerEmail").value.trim();
+    const cardName = document.getElementById("cardName").value.trim();
+    const cardNumber = document.getElementById("cardNumber").value;
+    const expiry = document.getElementById("cardExpiry").value;
+    const cvc = document.getElementById("cardCvc").value.trim();
+
+    if (!name || !email || !cardName) return showPaymentMessage("Completa todos los datos del cliente y titular.", false);
+    if (!validCardNumber(cardNumber)) return showPaymentMessage("El número de tarjeta no es válido. Usa 16 dígitos de prueba.", false);
+    if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(expiry)) return showPaymentMessage("La fecha debe tener el formato MM/AA.", false);
+    if (!/^\d{3,4}$/.test(cvc)) return showPaymentMessage("El CVC debe tener 3 o 4 dígitos.", false);
+
+    const { details, total } = getTotals();
+
+    if (supabaseClient) {
+      try {
+        const { data: cliente, error: clienteError } = await supabaseClient
+          .from("clientes")
+          .insert({ nombre: name, email: email })
+          .select("id")
+          .single();
+
+        if (clienteError) throw clienteError;
+
+        const { data: venta, error: ventaError } = await supabaseClient
+          .from("ventas")
+          .insert({ cliente_id: cliente.id, total: total, fecha: new Date().toISOString() })
+          .select("id")
+          .single();
+
+        if (ventaError) throw ventaError;
+
+        const detalleRows = details.map(item => ({
+          venta_id: venta.id,
+          producto_id: item.id,
+          cantidad: item.quantity,
+          precio_unitario: item.price,
+          subtotal: item.lineTotal
+        }));
+
+        const { error: detalleError } = await supabaseClient
+          .from("detalle_ventas").insert(detalleRows);
+
+        if (detalleError) throw detalleError;
+      } catch (error) {
+        console.error(error);
+        showPaymentMessage("La validación fue correcta, pero no se pudo registrar en Supabase. Revisa tus tablas, RLS y credenciales.", false);
+        return;
+      }
     }
 
-
-    /* =====================================================
-       AGREGAR AL CARRITO
-    ===================================================== */
-
-    function agregarCarrito(id) {
-
-        const producto = productos.find(p => p.id === id);
-
-        const existente = carrito.find(p => p.id === id);
-
-        if (existente) {
-
-            existente.cantidad++;
-
-        } else {
-
-            carrito.push({
-                ...producto,
-                cantidad: 1
-            });
-
-        }
-
-        actualizarCarrito();
-
-        mostrarMensaje("Producto agregado al carrito");
-
-    }
-
-
-    /* =====================================================
-       ELIMINAR PRODUCTO
-    ===================================================== */
-
-    function eliminarCarrito(id) {
-
-        carrito = carrito.filter(p => p.id !== id);
-
-        actualizarCarrito();
-
-    }
-
-
-    /* =====================================================
-       CAMBIAR CANTIDAD
-    ===================================================== */
-
-    function cambiarCantidad(id, cambio) {
-
-        const producto = carrito.find(p => p.id === id);
-
-        if (!producto) return;
-
-        producto.cantidad += cambio;
-
-        if (producto.cantidad <= 0) {
-
-            eliminarCarrito(id);
-
-            return;
-
-        }
-
-        actualizarCarrito();
-
-    }
-
-
-    /* =====================================================
-       ACTUALIZAR CARRITO
-    ===================================================== */
-
-    function actualizarCarrito() {
-
-        const count = carrito.reduce(
-            (total, producto) => total + producto.cantidad,
-            0
-        );
-
-        document.getElementById("cartCount").textContent = count;
-
-
-        const container = document.getElementById("cartItems");
-
-        if (carrito.length === 0) {
-
-            container.innerHTML = `
-                <div class="text-center py-10">
-
-                    <div class="text-6xl mb-4">
-                        🛒
-                    </div>
-
-                    <h3 class="text-xl font-bold">
-                        Tu carrito está vacío
-                    </h3>
-
-                    <p class="text-gray-500 mt-2">
-                        Agrega productos para comenzar tu compra.
-                    </p>
-
-                </div>
-            `;
-
-        } else {
-
-            container.innerHTML = carrito.map(producto => `
-
-                <div class="flex gap-4 items-center border-b py-4">
-
-                    <img
-                        src="${producto.imagen}"
-                        class="w-20 h-20 object-contain bg-gray-50 rounded-lg"
-                        onerror="this.onerror=null; this.src='https://placehold.co/100x100?text=Producto';"
-                    >
-
-                    <div class="flex-1">
-
-                        <h4 class="font-bold">
-                            ${producto.nombre}
-                        </h4>
-
-                        <p class="text-blue-600 font-semibold">
-                            $${producto.precio.toFixed(2)}
-                        </p>
-
-                        <div class="flex items-center gap-3 mt-2">
-
-                            <button
-                                onclick="cambiarCantidad(${producto.id}, -1)"
-                                class="bg-gray-200 w-7 h-7 rounded"
-                            >
-                                −
-                            </button>
-
-                            <span>
-                                ${producto.cantidad}
-                            </span>
-
-                            <button
-                                onclick="cambiarCantidad(${producto.id}, 1)"
-                                class="bg-gray-200 w-7 h-7 rounded"
-                            >
-                                +
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                    <button
-                        onclick="eliminarCarrito(${producto.id})"
-                        class="text-red-500 hover:text-red-700"
-                    >
-                        🗑️
-                    </button>
-
-                </div>
-
-            `).join("");
-
-        }
-
-
-        calcularTotales();
-
-    }
-
-
-    /* =====================================================
-       TOTALES
-    ===================================================== */
-
-    function calcularTotales() {
-
-        const subtotal = carrito.reduce(
-            (total, producto) =>
-                total + producto.precio * producto.cantidad,
-            0
-        );
-
-        const iva = subtotal * 0.15;
-
-        const total = subtotal + iva;
-
-        document.getElementById("subtotal").textContent =
-            `$${subtotal.toFixed(2)}`;
-
-        document.getElementById("iva").textContent =
-            `$${iva.toFixed(2)}`;
-
-        document.getElementById("total").textContent =
-            `$${total.toFixed(2)}`;
-
-    }
-
-
-    /* =====================================================
-       MODAL CARRITO
-    ===================================================== */
-
-    function abrirCarrito() {
-
-        document
-            .getElementById("cartModal")
-            .classList.remove("hidden");
-
-    }
-
-
-    function cerrarCarrito() {
-
-        document
-            .getElementById("cartModal")
-            .classList.add("hidden");
-
-    }
-
-
-    /* =====================================================
-       MODAL PAGO
-    ===================================================== */
-
-    function abrirPago() {
-
-        if (carrito.length === 0) {
-
-            alert("Tu carrito está vacío.");
-
-            return;
-
-        }
-
-        cerrarCarrito();
-
-        document
-            .getElementById("paymentModal")
-            .classList.remove("hidden");
-
-    }
-
-
-    function cerrarPago() {
-
-        document
-            .getElementById("paymentModal")
-            .classList.add("hidden");
-
-    }
-
-
-    /* =====================================================
-       VALIDACIÓN DE TARJETA
-    ===================================================== */
-
-    function validarTarjeta(numero) {
-
-        const limpio = numero.replace(/\s/g, "");
-
-        return /^\d{16}$/.test(limpio);
-
-    }
-
-
-    function validarFecha(fecha) {
-
-        return /^(0[1-9]|1[0-2])\/\d{2}$/.test(fecha);
-
-    }
-
-
-    function validarCVC(cvc) {
-
-        return /^\d{3,4}$/.test(cvc);
-
-    }
-
-
-    /* =====================================================
-       PROCESAR PAGO
-    ===================================================== */
-
-    document
-        .getElementById("paymentForm")
-        .addEventListener("submit", async function(event) {
-
-            event.preventDefault();
-
-
-            const nombreTitular =
-                document.getElementById("cardName").value.trim();
-
-            const numeroTarjeta =
-                document.getElementById("cardNumber").value.trim();
-
-            const fecha =
-                document.getElementById("cardDate").value.trim();
-
-            const cvc =
-                document.getElementById("cardCvc").value.trim();
-
-            const cliente =
-                document.getElementById("customerName").value.trim();
-
-            const email =
-                document.getElementById("customerEmail").value.trim();
-
-
-            if (nombreTitular.length < 3) {
-
-                alert("Ingresa correctamente el nombre del titular.");
-
-                return;
-
-            }
-
-
-            if (!validarTarjeta(numeroTarjeta)) {
-
-                alert("El número de tarjeta debe contener 16 dígitos.");
-
-                return;
-
-            }
-
-
-            if (!validarFecha(fecha)) {
-
-                alert("La fecha debe tener el formato MM/AA.");
-
-                return;
-
-            }
-
-
-            if (!validarCVC(cvc)) {
-
-                alert("El CVC debe tener 3 o 4 dígitos.");
-
-                return;
-
-            }
-
-
-            if (cliente.length < 3) {
-
-                alert("Ingresa el nombre del cliente.");
-
-                return;
-
-            }
-
-
-            if (!email.includes("@")) {
-
-                alert("Ingresa un correo electrónico válido.");
-
-                return;
-
-            }
-
-
-            const subtotal = carrito.reduce(
-                (total, producto) =>
-                    total + producto.precio * producto.cantidad,
-                0
-            );
-
-            const iva = subtotal * 0.15;
-
-            const total = subtotal + iva;
-
-
-            /* ============================================
-               SUPABASE
-            ============================================ */
-
-            if (supabaseClient) {
-
-                try {
-
-                    /*
-                     * Primero se registra el cliente.
-                     */
-
-                    const { data: clienteData, error: clienteError } =
-                        await supabaseClient
-                            .from("clientes")
-                            .insert([{
-                                nombre: cliente,
-                                email: email
-                            }])
-                            .select()
-                            .single();
-
-
-                    if (clienteError) {
-
-                        console.error(clienteError);
-
-                        throw new Error(
-                            "No se pudo registrar el cliente."
-                        );
-
-                    }
-
-
-                    /*
-                     * Se registra la venta.
-                     */
-
-                    const { data: ventaData, error: ventaError } =
-                        await supabaseClient
-                            .from("ventas")
-                            .insert([{
-                                cliente_id: clienteData.id,
-                                total: total,
-                                fecha: new Date().toISOString()
-                            }])
-                            .select()
-                            .single();
-
-
-                    if (ventaError) {
-
-                        console.error(ventaError);
-
-                        throw new Error(
-                            "No se pudo registrar la venta."
-                        );
-
-                    }
-
-
-                    /*
-                     * Se registran los productos vendidos.
-                     */
-
-                    const detalles = carrito.map(producto => ({
-
-                        venta_id: ventaData.id,
-
-                        producto_id: producto.id,
-
-                        cantidad: producto.cantidad,
-
-                        precio_unitario: producto.precio,
-
-                        subtotal:
-                            producto.precio *
-                            producto.cantidad
-
-                    }));
-
-
-                    const { error: detalleError } =
-                        await supabaseClient
-                            .from("detalle_ventas")
-                            .insert(detalles);
-
-
-                    if (detalleError) {
-
-                        console.error(detalleError);
-
-                        throw new Error(
-                            "No se pudieron registrar los detalles."
-                        );
-
-                    }
-
-                }
-
-                catch (error) {
-
-                    console.error(error);
-
-                    alert(
-                        "La compra no pudo registrarse en Supabase."
-                    );
-
-                    return;
-
-                }
-
-            }
-
-
-            /* ============================================
-               COMPRA EXITOSA
-            ============================================ */
-
-            alert(
-                `¡Compra realizada correctamente!\n\n` +
-                `Cliente: ${cliente}\n` +
-                `Total: $${total.toFixed(2)}`
-            );
-
-
-            carrito = [];
-
-            actualizarCarrito();
-
-            cerrarPago();
-
-            document
-                .getElementById("paymentForm")
-                .reset();
-
-        });
-
-
-    /* =====================================================
-       MENSAJE
-    ===================================================== */
-
-    function mostrarMensaje(texto) {
-
-        const mensaje = document.createElement("div");
-
-        mensaje.className =
-            "fixed bottom-5 right-5 bg-green-600 text-white px-6 py-3 rounded-xl shadow-lg z-[100]";
-
-        mensaje.textContent = "✓ " + texto;
-
-        document.body.appendChild(mensaje);
-
-        setTimeout(() => {
-
-            mensaje.remove();
-
-        }, 2500);
-
-    }
-
-
-    /* =====================================================
-       INICIO
-    ===================================================== */
-
-    renderProductos();
-
-    actualizarCarrito();
-
+    showPaymentMessage("¡Compra procesada correctamente! El pedido quedó registrado.", true);
+    cart = [];
+    renderCart();
+    document.getElementById("paymentForm").reset();
+
+    setTimeout(() => {
+      closePayment();
+    }, 1800);
+  });
+
+  document.getElementById("cartButton").addEventListener("click", openCart);
+  document.getElementById("closeCart").addEventListener("click", closeCart);
+  document.getElementById("cartOverlay").addEventListener("click", closeCart);
+  document.getElementById("checkoutButton").addEventListener("click", openPayment);
+  document.getElementById("closePayment").addEventListener("click", closePayment);
+
+  document.querySelectorAll(".category-btn").forEach(button => {
+    button.addEventListener("click", () => {
+      activeCategory = button.dataset.category;
+      document.querySelectorAll(".category-btn").forEach(b => {
+        b.classList.remove("bg-primary-600", "text-white");
+        b.classList.add("bg-slate-100");
+      });
+      button.classList.add("bg-primary-600", "text-white");
+      button.classList.remove("bg-slate-100");
+      renderProducts();
+    });
+  });
+
+  function bindSearch(id) {
+    document.getElementById(id).addEventListener("input", e => {
+      searchTerm = e.target.value.trim();
+      const other = id === "searchInput" ? "searchInputMobile" : "searchInput";
+      document.getElementById(other).value = searchTerm;
+      renderProducts();
+    });
+  }
+
+  bindSearch("searchInput");
+  bindSearch("searchInputMobile");
+
+  renderCart();
+  validateProductImages();
+
+  /* ============================================================
+     3. DDL SUPABASE / POSTGRESQL
+     ============================================================
+
+     CREATE TABLE productos (
+       id BIGSERIAL PRIMARY KEY,
+       nombre VARCHAR(150) NOT NULL,
+       categoria VARCHAR(100) NOT NULL,
+       descripcion TEXT,
+       precio NUMERIC(12,2) NOT NULL CHECK (precio >= 0),
+       imagen TEXT,
+       created_at TIMESTAMPTZ DEFAULT NOW()
+     );
+
+     CREATE TABLE clientes (
+       id BIGSERIAL PRIMARY KEY,
+       nombre VARCHAR(150) NOT NULL,
+       email VARCHAR(180) NOT NULL,
+       created_at TIMESTAMPTZ DEFAULT NOW()
+     );
+
+     CREATE TABLE ventas (
+       id BIGSERIAL PRIMARY KEY,
+       cliente_id BIGINT REFERENCES clientes(id),
+       total NUMERIC(12,2) NOT NULL,
+       fecha TIMESTAMPTZ DEFAULT NOW()
+     );
+
+     CREATE TABLE detalle_ventas (
+       id BIGSERIAL PRIMARY KEY,
+       venta_id BIGINT NOT NULL REFERENCES ventas(id) ON DELETE CASCADE,
+       producto_id BIGINT REFERENCES productos(id),
+       cantidad INTEGER NOT NULL CHECK (cantidad > 0),
+       precio_unitario NUMERIC(12,2) NOT NULL,
+       subtotal NUMERIC(12,2) NOT NULL
+     );
+
+     IMPORTANTE:
+     - No guardar números de tarjeta ni CVC en Supabase.
+     - En producción, el pago debe pasar por una pasarela segura.
+     - En Supabase configura las políticas RLS apropiadas para tu examen.
+
+     ============================================================
+     4. GITHUB
+     ============================================================
+
+     1) Crear un repositorio llamado TodoHogar.
+     2) Subir index.html y la carpeta assets/.
+     3) En Settings > Pages seleccionar:
+        Branch: main
+        Folder: / (root)
+     4) Guardar y esperar el despliegue.
+     5) También puedes desplegar el mismo proyecto en Vercel.
+
+     ============================================================
+     5. PENTAHO PDI: SUPABASE -> MYSQL
+     ============================================================
+
+     A) Descargar el driver JDBC de PostgreSQL y colocarlo en la carpeta
+        lib de Pentaho Data Integration.
+     B) Reiniciar Spoon.
+     C) Crear conexión PostgreSQL con:
+        Host: el host de tu proyecto Supabase
+        Puerto: 5432
+        Base de datos: postgres
+        Usuario: postgres
+        Contraseña: la contraseña de la base de datos
+     D) Crear una transformación.
+     E) Usar Table Input para consultar productos, clientes, ventas y
+        detalle_ventas.
+     F) Crear una conexión MySQL y configurar:
+        host, puerto 3306, base de datos, usuario y contraseña.
+     G) Usar Table Output para cargar las tablas en MySQL.
+     H) Para una carga más completa, usar pasos de limpieza,
+        transformación, mapeo de tipos y validación antes del Output.
+
+     ============================================================
+     6. MYSQL -> POWER BI
+     ============================================================
+
+     1) Instalar el conector MySQL compatible con Power BI.
+     2) Abrir Power BI Desktop.
+     3) Obtener datos > MySQL database.
+     4) Escribir servidor y base de datos.
+     5) Seleccionar las tablas cargadas por Pentaho.
+     6) En Modelo relacionar:
+          clientes.id -> ventas.cliente_id
+          ventas.id -> detalle_ventas.venta_id
+          productos.id -> detalle_ventas.producto_id
+     7) Crear medidas como:
+          Ventas Totales = SUM(ventas[total])
+          Unidades = SUM(detalle_ventas[cantidad])
+     8) Crear visualizaciones por fecha, producto, categoría y cliente.
+
+     ============================================================
+     7. FLUJO COMPLETO DEL PROYECTO
+     ============================================================
+
+     Usuario -> TodoHogar -> Supabase/PostgreSQL -> Pentaho PDI
+     -> MySQL -> Power BI -> Dashboard.
+
+     Esta sección se deja como documentación académica dentro del
+     index.html para que el proyecto pueda presentarse en el examen.
+  */
 </script>
-
-
-<!-- =========================================================
-     DOCUMENTACIÓN TÉCNICA DEL PROYECTO
-=========================================================
-
-TODOHOGAR
-Arquitectura de Datos
-HTML + JavaScript + Supabase + Pentaho + MySQL + Power BI
-
-
-==============================================================
-1. ESTRUCTURA DE BASE DE DATOS EN SUPABASE
-==============================================================
-
-Ejecutar el siguiente SQL en:
-
-Supabase
-→ SQL Editor
-→ New Query
-
-
---------------------------------------------------------------
-TABLA PRODUCTOS
---------------------------------------------------------------
-
-CREATE TABLE productos (
-
-    id BIGSERIAL PRIMARY KEY,
-
-    nombre VARCHAR(200) NOT NULL,
-
-    categoria VARCHAR(100) NOT NULL,
-
-    descripcion TEXT,
-
-    precio DECIMAL(10,2) NOT NULL,
-
-    imagen TEXT,
-
-    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-
-);
-
-
---------------------------------------------------------------
-TABLA CLIENTES
---------------------------------------------------------------
-
-CREATE TABLE clientes (
-
-    id BIGSERIAL PRIMARY KEY,
-
-    nombre VARCHAR(150) NOT NULL,
-
-    email VARCHAR(200) NOT NULL,
-
-    fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-
-);
-
-
---------------------------------------------------------------
-TABLA VENTAS
---------------------------------------------------------------
-
-CREATE TABLE ventas (
-
-    id BIGSERIAL PRIMARY KEY,
-
-    cliente_id BIGINT REFERENCES clientes(id),
-
-    total DECIMAL(10,2) NOT NULL,
-
-    fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-
-);
-
-
---------------------------------------------------------------
-TABLA DETALLE_VENTAS
---------------------------------------------------------------
-
-CREATE TABLE detalle_ventas (
-
-    id BIGSERIAL PRIMARY KEY,
-
-    venta_id BIGINT REFERENCES ventas(id)
-        ON DELETE CASCADE,
-
-    producto_id BIGINT REFERENCES productos(id),
-
-    cantidad INTEGER NOT NULL,
-
-    precio_unitario DECIMAL(10,2) NOT NULL,
-
-    subtotal DECIMAL(10,2) NOT NULL
-
-);
-
-
-==============================================================
-2. RELACIONES
-==============================================================
-
-clientes
-    |
-    | 1:N
-    ↓
-ventas
-    |
-    | 1:N
-    ↓
-detalle_ventas
-    |
-    | N:1
-    ↓
-productos
-
-
-La relación permite conocer:
-
-Cliente
-→ Venta
-→ Productos comprados
-→ Cantidad
-→ Precio
-→ Subtotal
-
-
-==============================================================
-3. CONFIGURAR SUPABASE
-==============================================================
-
-Entrar a Supabase.
-
-Crear un proyecto.
-
-Ir a:
-
-Project Settings
-→ API
-
-Copiar:
-
-Project URL
-
-y
-
-anon public key
-
-
-Después reemplazar en JavaScript:
-
-const SUPABASE_URL = "TU_SUPABASE_URL";
-
-const SUPABASE_KEY = "TU_SUPABASE_ANON_KEY";
-
-
-IMPORTANTE:
-
-Para un proyecto académico se puede utilizar la anon key
-con las políticas RLS configuradas correctamente.
-
-Nunca colocar una SERVICE_ROLE KEY en el frontend.
-
-
-==============================================================
-4. INSERTAR PRODUCTOS
-==============================================================
-
-Ejemplo:
-
-INSERT INTO productos
-(nombre, categoria, descripcion, precio, imagen)
-VALUES
-
-(
-    'Refrigeradora French Door RI-992I NE',
-    'Refrigeración',
-    'Refrigeradora moderna French Door',
-    1915.00,
-    'URL_IMAGEN'
-),
-
-(
-    'Lavadora',
-    'Lavado',
-    'Lavadora para el hogar',
-    435.00,
-    'URL_IMAGEN'
-);
-
-
-==============================================================
-5. GITHUB
-==============================================================
-
-Crear un repositorio nuevo llamado:
-
-TodoHogar
-
-
-Crear:
-
-index.html
-
-
-Guardar el código anterior dentro del archivo.
-
-
-Desde Git:
-
-git init
-
-git add .
-
-git commit -m "Proyecto TodoHogar"
-
-git branch -M main
-
-git remote add origin URL_DEL_REPOSITORIO
-
-git push -u origin main
-
-
-==============================================================
-6. GITHUB PAGES
-==============================================================
-
-Entrar al repositorio.
-
-Ir a:
-
-Settings
-→ Pages
-
-Seleccionar:
-
-Deploy from branch
-
-Branch:
-
-main
-
-Folder:
-
-/root
-
-
-Guardar.
-
-GitHub generará una URL para la página.
-
-
-==============================================================
-7. VERCEL
-==============================================================
-
-También se puede desplegar mediante Vercel.
-
-Crear una cuenta.
-
-Importar el repositorio de GitHub.
-
-Seleccionar el proyecto TodoHogar.
-
-Presionar Deploy.
-
-
-==============================================================
-8. CONEXIÓN SUPABASE → PENTAHO
-==============================================================
-
-Pentaho Data Integration (PDI)
-también conocido como Spoon.
-
-Crear una transformación.
-
-Agregar:
-
-Table Input
-
-
-Configurar una conexión PostgreSQL.
-
-
-Driver:
-
-PostgreSQL JDBC
-
-
-Host:
-
-Host proporcionado por Supabase
-
-
-Port:
-
-5432
-
-
-Database:
-
-Nombre de la base de datos
-
-
-Username:
-
-Usuario de PostgreSQL
-
-
-Password:
-
-Contraseña de Supabase
-
-
-Después probar:
-
-Test Connection
-
-
-==============================================================
-9. EXTRACCIÓN DE DATOS
-==============================================================
-
-En Table Input utilizar consultas como:
-
-SELECT *
-FROM productos;
-
-
-También:
-
-SELECT *
-FROM clientes;
-
-
-SELECT *
-FROM ventas;
-
-
-SELECT *
-FROM detalle_ventas;
-
-
-Esto permite extraer los datos desde Supabase.
-
-
-==============================================================
-10. TRANSFORMACIÓN ETL
-==============================================================
-
-Flujo recomendado:
-
-Table Input
-     ↓
-Select Values
-     ↓
-Calculator
-     ↓
-Filter Rows
-     ↓
-Table Output
-
-
-Table Input:
-
-Extrae los datos de Supabase.
-
-
-Select Values:
-
-Selecciona las columnas necesarias.
-
-
-Calculator:
-
-Puede calcular nuevos valores.
-
-
-Filter Rows:
-
-Permite filtrar información.
-
-
-Table Output:
-
-Carga la información en MySQL.
-
-
-==============================================================
-11. CONEXIÓN PENTAHO → MYSQL
-==============================================================
-
-En Pentaho crear una nueva conexión:
-
-Database Connection
-
-
-Tipo:
-
-MySQL
-
-
-Configurar:
-
-Host
-Port
-Database
-Username
-Password
-
-
-Ejemplo:
-
-Host: localhost
-
-Port: 3306
-
-Database: todohogar
-
-Username: root
-
-Password: ********
-
-
-Probar:
-
-Test Connection
-
-
-==============================================================
-12. TABLAS EN MYSQL
-==============================================================
-
-Crear las mismas tablas:
-
-productos
-
-clientes
-
-ventas
-
-detalle_ventas
-
-
-Mantener las relaciones mediante claves primarias
-y claves foráneas.
-
-
-==============================================================
-13. CARGA ETL
-==============================================================
-
-En Pentaho:
-
-Table Input
-        ↓
-Transformaciones
-        ↓
-Table Output
-
-
-Table Output debe apuntar a las tablas de MySQL.
-
-
-Ejemplo:
-
-productos → MySQL.productos
-
-clientes → MySQL.clientes
-
-ventas → MySQL.ventas
-
-detalle_ventas → MySQL.detalle_ventas
-
-
-==============================================================
-14. MYSQL → POWER BI
-==============================================================
-
-Abrir:
-
-Power BI Desktop
-
-
-Seleccionar:
-
-Obtener datos
-
-→ Base de datos MySQL
-
-
-Ingresar:
-
-Servidor:
-
-localhost
-
-
-Base de datos:
-
-todohogar
-
-
-Ingresar usuario y contraseña.
-
-
-Seleccionar las tablas:
-
-productos
-
-clientes
-
-ventas
-
-detalle_ventas
-
-
-Presionar:
-
-Cargar
-
-
-==============================================================
-15. MODELO RELACIONAL EN POWER BI
-==============================================================
-
-Configurar:
-
-clientes.id
-        ↓
-ventas.cliente_id
-
-
-ventas.id
-        ↓
-detalle_ventas.venta_id
-
-
-productos.id
-        ↓
-detalle_ventas.producto_id
-
-
-Esto permite analizar:
-
-Ventas por cliente
-
-Ventas por producto
-
-Productos más vendidos
-
-Ingresos
-
-Cantidad vendida
-
-Categorías
-
-Total de ventas
-
-
-==============================================================
-16. DASHBOARD RECOMENDADO
-==============================================================
-
-Crear tarjetas para:
-
-Total de ventas
-
-Cantidad de productos vendidos
-
-Número de clientes
-
-Ticket promedio
-
-
-Crear gráficos:
-
-Ventas por categoría
-
-Ventas por producto
-
-Ventas por fecha
-
-Productos más vendidos
-
-
-También se pueden agregar:
-
-Filtros por fecha
-
-Filtros por categoría
-
-Filtros por producto
-
-
-==============================================================
-17. FLUJO COMPLETO DEL PROYECTO
-==============================================================
-
-
-                  TODOHOGAR
-                      |
-                      ↓
-                  HTML + JS
-                      |
-                      ↓
-                   SUPABASE
-                      |
-                      ↓
-             Base de datos PostgreSQL
-                      |
-                      ↓
-              PENTAHO DATA INTEGRATION
-                      |
-                      ↓
-                    ETL
-                      |
-                      ↓
-                    MYSQL
-                      |
-                      ↓
-                  POWER BI
-                      |
-                      ↓
-                 DASHBOARD
-
-
-==============================================================
-FIN DE LA DOCUMENTACIÓN
-==============================================================
-
--->
-
 </body>
 </html>
